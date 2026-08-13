@@ -1,0 +1,1277 @@
+{
+  "id": "c8bccd11-d3c9-44dc-856f-7dc849c6a3ce",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.alunos": {
+      "name": "alunos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "turma_id": {
+          "name": "turma_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apelido": {
+          "name": "apelido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "foto_url": {
+          "name": "foto_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ativo": {
+          "name": "ativo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "ataque": {
+          "name": "ataque",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "defesa": {
+          "name": "defesa",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tecnica": {
+          "name": "tecnica",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "velocidade": {
+          "name": "velocidade",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fisico": {
+          "name": "fisico",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "goleiro": {
+          "name": "goleiro",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 20
+        },
+        "overall": {
+          "name": "overall",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "as": "((ataque + defesa + tecnica + velocidade + fisico) / 5)",
+            "type": "stored"
+          }
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "alunos_turma_id_turmas_id_fk": {
+          "name": "alunos_turma_id_turmas_id_fk",
+          "tableFrom": "alunos",
+          "tableTo": "turmas",
+          "columnsFrom": [
+            "turma_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "alunos_created_by_profiles_id_fk": {
+          "name": "alunos_created_by_profiles_id_fk",
+          "tableFrom": "alunos",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "alunos_ataque_range": {
+          "name": "alunos_ataque_range",
+          "value": "\"alunos\".\"ataque\" between 0 and 99"
+        },
+        "alunos_defesa_range": {
+          "name": "alunos_defesa_range",
+          "value": "\"alunos\".\"defesa\" between 0 and 99"
+        },
+        "alunos_tecnica_range": {
+          "name": "alunos_tecnica_range",
+          "value": "\"alunos\".\"tecnica\" between 0 and 99"
+        },
+        "alunos_velocidade_range": {
+          "name": "alunos_velocidade_range",
+          "value": "\"alunos\".\"velocidade\" between 0 and 99"
+        },
+        "alunos_fisico_range": {
+          "name": "alunos_fisico_range",
+          "value": "\"alunos\".\"fisico\" between 0 and 99"
+        },
+        "alunos_goleiro_range": {
+          "name": "alunos_goleiro_range",
+          "value": "\"alunos\".\"goleiro\" between 0 and 99"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.challenges": {
+      "name": "challenges",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "challenger_user_id": {
+          "name": "challenger_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "challenger_squad_id": {
+          "name": "challenger_squad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_desafiado",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "challenged_user_id": {
+          "name": "challenged_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "challenged_squad_id": {
+          "name": "challenged_squad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bot_dificuldade": {
+          "name": "bot_dificuldade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "status_desafio",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendente'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "respondido_em": {
+          "name": "respondido_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "challenges_challenger_user_id_profiles_id_fk": {
+          "name": "challenges_challenger_user_id_profiles_id_fk",
+          "tableFrom": "challenges",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "challenger_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "challenges_challenger_squad_id_squads_id_fk": {
+          "name": "challenges_challenger_squad_id_squads_id_fk",
+          "tableFrom": "challenges",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "challenger_squad_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "challenges_challenged_user_id_profiles_id_fk": {
+          "name": "challenges_challenged_user_id_profiles_id_fk",
+          "tableFrom": "challenges",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "challenged_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "challenges_challenged_squad_id_squads_id_fk": {
+          "name": "challenges_challenged_squad_id_squads_id_fk",
+          "tableFrom": "challenges",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "challenged_squad_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.draft_rounds": {
+      "name": "draft_rounds",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "draft_session_id": {
+          "name": "draft_session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rodada_numero": {
+          "name": "rodada_numero",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "turma_sorteada_id": {
+          "name": "turma_sorteada_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "posicao_alvo": {
+          "name": "posicao_alvo",
+          "type": "posicao_futsal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "aluno_escolhido_id": {
+          "name": "aluno_escolhido_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sorteado_em": {
+          "name": "sorteado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "escolhido_em": {
+          "name": "escolhido_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "draft_rounds_draft_session_id_draft_sessions_id_fk": {
+          "name": "draft_rounds_draft_session_id_draft_sessions_id_fk",
+          "tableFrom": "draft_rounds",
+          "tableTo": "draft_sessions",
+          "columnsFrom": [
+            "draft_session_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draft_rounds_turma_sorteada_id_turmas_id_fk": {
+          "name": "draft_rounds_turma_sorteada_id_turmas_id_fk",
+          "tableFrom": "draft_rounds",
+          "tableTo": "turmas",
+          "columnsFrom": [
+            "turma_sorteada_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "draft_rounds_aluno_escolhido_id_alunos_id_fk": {
+          "name": "draft_rounds_aluno_escolhido_id_alunos_id_fk",
+          "tableFrom": "draft_rounds",
+          "tableTo": "alunos",
+          "columnsFrom": [
+            "aluno_escolhido_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draft_rounds_session_rodada_key": {
+          "name": "draft_rounds_session_rodada_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "draft_session_id",
+            "rodada_numero"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draft_rounds_rodada_range": {
+          "name": "draft_rounds_rodada_range",
+          "value": "\"draft_rounds\".\"rodada_numero\" between 1 and 5"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draft_sessions": {
+      "name": "draft_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "squad_id": {
+          "name": "squad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modo": {
+          "name": "modo",
+          "type": "modo_draft",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'classico'"
+        },
+        "status": {
+          "name": "status",
+          "type": "status_draft",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'em_andamento'"
+        },
+        "iniciado_em": {
+          "name": "iniciado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "concluido_em": {
+          "name": "concluido_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "draft_sessions_squad_id_squads_id_fk": {
+          "name": "draft_sessions_squad_id_squads_id_fk",
+          "tableFrom": "draft_sessions",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "squad_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draft_sessions_squad_key": {
+          "name": "draft_sessions_squad_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "squad_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.friendships": {
+      "name": "friendships",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "friend_id": {
+          "name": "friend_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "status_amizade",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendente'"
+        },
+        "requested_by": {
+          "name": "requested_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "friendships_user_id_profiles_id_fk": {
+          "name": "friendships_user_id_profiles_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "friendships_friend_id_profiles_id_fk": {
+          "name": "friendships_friend_id_profiles_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "friend_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "friendships_requested_by_profiles_id_fk": {
+          "name": "friendships_requested_by_profiles_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "requested_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "friendships_user_friend_key": {
+          "name": "friendships_user_friend_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "friend_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "friendships_no_self": {
+          "name": "friendships_no_self",
+          "value": "\"friendships\".\"user_id\" <> \"friendships\".\"friend_id\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.match_events": {
+      "name": "match_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "match_id": {
+          "name": "match_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ordem": {
+          "name": "ordem",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minuto_jogo": {
+          "name": "minuto_jogo",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offset_playback_ms": {
+          "name": "offset_playback_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_evento_partida",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "squad_id": {
+          "name": "squad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aluno_id": {
+          "name": "aluno_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "match_events_match_id_matches_id_fk": {
+          "name": "match_events_match_id_matches_id_fk",
+          "tableFrom": "match_events",
+          "tableTo": "matches",
+          "columnsFrom": [
+            "match_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "match_events_squad_id_squads_id_fk": {
+          "name": "match_events_squad_id_squads_id_fk",
+          "tableFrom": "match_events",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "squad_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "match_events_aluno_id_alunos_id_fk": {
+          "name": "match_events_aluno_id_alunos_id_fk",
+          "tableFrom": "match_events",
+          "tableTo": "alunos",
+          "columnsFrom": [
+            "aluno_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "match_events_match_ordem_key": {
+          "name": "match_events_match_ordem_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "match_id",
+            "ordem"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.matches": {
+      "name": "matches",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "challenge_id": {
+          "name": "challenge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "squad_home_id": {
+          "name": "squad_home_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "squad_away_id": {
+          "name": "squad_away_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_bot_match": {
+          "name": "is_bot_match",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "status": {
+          "name": "status",
+          "type": "status_partida",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'agendada'"
+        },
+        "seed": {
+          "name": "seed",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "placar_home": {
+          "name": "placar_home",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "placar_away": {
+          "name": "placar_away",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "duracao_playback_seg": {
+          "name": "duracao_playback_seg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 90
+        },
+        "iniciada_em": {
+          "name": "iniciada_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "finalizada_em": {
+          "name": "finalizada_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "matches_challenge_id_challenges_id_fk": {
+          "name": "matches_challenge_id_challenges_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "challenges",
+          "columnsFrom": [
+            "challenge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matches_squad_home_id_squads_id_fk": {
+          "name": "matches_squad_home_id_squads_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "squad_home_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "matches_squad_away_id_squads_id_fk": {
+          "name": "matches_squad_away_id_squads_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "squad_away_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'comum'"
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_bot": {
+          "name": "is_bot",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profiles_username_unique": {
+          "name": "profiles_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.squad_slots": {
+      "name": "squad_slots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "squad_id": {
+          "name": "squad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "posicao": {
+          "name": "posicao",
+          "type": "posicao_futsal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "aluno_id": {
+          "name": "aluno_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preenchida_em": {
+          "name": "preenchida_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "squad_slots_squad_id_squads_id_fk": {
+          "name": "squad_slots_squad_id_squads_id_fk",
+          "tableFrom": "squad_slots",
+          "tableTo": "squads",
+          "columnsFrom": [
+            "squad_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "squad_slots_aluno_id_alunos_id_fk": {
+          "name": "squad_slots_aluno_id_alunos_id_fk",
+          "tableFrom": "squad_slots",
+          "tableTo": "alunos",
+          "columnsFrom": [
+            "aluno_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "squad_slots_squad_posicao_key": {
+          "name": "squad_slots_squad_posicao_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "squad_id",
+            "posicao"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.squads": {
+      "name": "squads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Meu Time'"
+        },
+        "formacao": {
+          "name": "formacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'classica'"
+        },
+        "draft_concluido": {
+          "name": "draft_concluido",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "squads_user_id_profiles_id_fk": {
+          "name": "squads_user_id_profiles_id_fk",
+          "tableFrom": "squads",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.turmas": {
+      "name": "turmas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ano_letivo": {
+          "name": "ano_letivo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "serie": {
+          "name": "serie",
+          "type": "serie_ensino",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "letra": {
+          "name": "letra",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ativa": {
+          "name": "ativa",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "turmas_ano_serie_letra_key": {
+          "name": "turmas_ano_serie_letra_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "ano_letivo",
+            "serie",
+            "letra"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.modo_draft": {
+      "name": "modo_draft",
+      "schema": "public",
+      "values": [
+        "classico",
+        "as_cegas"
+      ]
+    },
+    "public.posicao_futsal": {
+      "name": "posicao_futsal",
+      "schema": "public",
+      "values": [
+        "GOLEIRO",
+        "FIXO",
+        "ALA_1",
+        "ALA_2",
+        "PIVO"
+      ]
+    },
+    "public.serie_ensino": {
+      "name": "serie_ensino",
+      "schema": "public",
+      "values": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "public.status_amizade": {
+      "name": "status_amizade",
+      "schema": "public",
+      "values": [
+        "pendente",
+        "aceito",
+        "recusado",
+        "bloqueado"
+      ]
+    },
+    "public.status_desafio": {
+      "name": "status_desafio",
+      "schema": "public",
+      "values": [
+        "pendente",
+        "aceito",
+        "recusado",
+        "cancelado",
+        "em_andamento",
+        "finalizado"
+      ]
+    },
+    "public.status_draft": {
+      "name": "status_draft",
+      "schema": "public",
+      "values": [
+        "em_andamento",
+        "concluido",
+        "abandonado"
+      ]
+    },
+    "public.status_partida": {
+      "name": "status_partida",
+      "schema": "public",
+      "values": [
+        "agendada",
+        "ao_vivo",
+        "finalizada"
+      ]
+    },
+    "public.tipo_desafiado": {
+      "name": "tipo_desafiado",
+      "schema": "public",
+      "values": [
+        "amigo",
+        "bot"
+      ]
+    },
+    "public.tipo_evento_partida": {
+      "name": "tipo_evento_partida",
+      "schema": "public",
+      "values": [
+        "gol",
+        "defesa",
+        "falta",
+        "cartao",
+        "inicio_tempo",
+        "fim_tempo",
+        "chance_perdida"
+      ]
+    },
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "values": [
+        "comum",
+        "admin"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
