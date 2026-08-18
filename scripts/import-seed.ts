@@ -3,7 +3,7 @@
  * Uso: npm run seed:import -- caminho/para/arquivo.csv
  * Roda com DATABASE_URL (conexão direta ao Postgres), nunca no client.
  */
-import "dotenv/config";
+import "./load-env";
 import { readFileSync } from "node:fs";
 import { parseAlunosCsv } from "@/lib/csv/parseAlunosCsv";
 import { importAlunosRows } from "@/lib/csv/importAlunos";

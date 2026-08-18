@@ -10,8 +10,8 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "seed:import": "tsx scripts/import-seed.ts",
-    "seed:bots": "tsx scripts/seed-bots.ts"
+    "seed:import": "tsx --env-file=.env.local scripts/import-seed.ts",
+    "seed:bots": "tsx --env-file=.env.local scripts/seed-bots.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -4,7 +4,8 @@
  * importar pelo menos alguns alunos (npm run seed:import).
  * Uso: npm run seed:bots
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: [".env.local", ".env"] });
 import { randomUUID } from "node:crypto";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
