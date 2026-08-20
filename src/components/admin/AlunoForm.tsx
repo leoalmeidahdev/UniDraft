@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { nomeTurma, type SerieEnsino } from "@/types/domain";
+import { nomeTurma, POSICOES_JOGADOR, POSICAO_JOGADOR_LABEL, type PosicaoJogador, type SerieEnsino } from "@/types/domain";
 
 const INITIAL_STATE: AdminActionState = {};
 
@@ -52,6 +52,7 @@ export function AlunoForm({
     velocidade: number;
     fisico: number;
     goleiro: number;
+    posicao: PosicaoJogador | null;
     ativo: boolean;
   };
   turmaIdPadrao?: string;
@@ -88,6 +89,25 @@ export function AlunoForm({
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="apelido">Apelido (opcional)</Label>
         <Input id="apelido" name="apelido" defaultValue={aluno?.apelido ?? ""} />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="posicao">Posição</Label>
+        <Select name="posicao" defaultValue={aluno?.posicao ?? undefined}>
+          <SelectTrigger id="posicao" className="w-full">
+            <SelectValue placeholder="Selecione a posição" />
+          </SelectTrigger>
+          <SelectContent>
+            {POSICOES_JOGADOR.map((p) => (
+              <SelectItem key={p} value={p}>
+                {POSICAO_JOGADOR_LABEL[p]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          Define em qual vaga do time esse aluno pode entrar no draft.
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">

@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import { z } from "zod";
-import { SERIES_ENSINO, LETRAS_TURMA } from "@/types/domain";
+import { SERIES_ENSINO, LETRAS_TURMA, POSICOES_JOGADOR, type PosicaoJogador } from "@/types/domain";
 
 const ATRIBUTO_DEFAULT = 50;
 
@@ -16,6 +16,14 @@ const linhaCsvSchema = z.object({
     }),
   nome_aluno: z.string().trim().min(1, "nome_aluno é obrigatório"),
   apelido: z.string().trim().optional(),
+  posicao: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine((p) => (POSICOES_JOGADOR as readonly string[]).includes(p), {
+      message: `posicao deve ser uma de ${POSICOES_JOGADOR.join(", ")}`,
+    })
+    .optional(),
   ataque: z.coerce.number().int().min(0).max(99).optional(),
   defesa: z.coerce.number().int().min(0).max(99).optional(),
   tecnica: z.coerce.number().int().min(0).max(99).optional(),
@@ -30,13 +38,15 @@ export interface AlunoCsvRow {
   letra: string;
   nome: string;
   apelido: string | null;
+  posicao: PosicaoJogador | null;
   ataque: number;
   defesa: number;
   tecnica: number;
   velocidade: number;
   fisico: number;
   goleiro: number;
-  /** true quando algum atributo veio em branco e recebeu o default — precisa revisão de um admin */
+  /** true quando algum atributo veio em branco (ou a posição não veio) e recebeu o
+   * default — precisa revisão de um admin */
   precisaRevisao: boolean;
 }
 
@@ -92,13 +102,14 @@ export function parseAlunosCsv(csvText: string): ParseAlunosCsvResult {
       letra: dado.letra,
       nome: dado.nome_aluno,
       apelido: dado.apelido ?? null,
+      posicao: (dado.posicao as PosicaoJogador | undefined) ?? null,
       ataque: dado.ataque ?? ATRIBUTO_DEFAULT,
       defesa: dado.defesa ?? ATRIBUTO_DEFAULT,
       tecnica: dado.tecnica ?? ATRIBUTO_DEFAULT,
       velocidade: dado.velocidade ?? ATRIBUTO_DEFAULT,
       fisico: dado.fisico ?? ATRIBUTO_DEFAULT,
       goleiro: dado.goleiro ?? 20,
-      precisaRevisao: algumAtributoFaltando,
+      precisaRevisao: algumAtributoFaltando || !dado.posicao,
     });
   });
 

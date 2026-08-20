@@ -36,7 +36,9 @@ export default async function HistoricoDraftPage() {
             <TableRow key={rodada.id}>
               <TableCell>{rodada.rodadaNumero}</TableCell>
               <TableCell>{nomeTurma(rodada.turmaSorteada)}</TableCell>
-              <TableCell>{POSICAO_LABEL[rodada.posicaoAlvo]}</TableCell>
+              <TableCell>
+                {rodada.posicaoAlvo ? POSICAO_LABEL[rodada.posicaoAlvo] : "—"}
+              </TableCell>
               <TableCell>{rodada.alunoEscolhido?.nome ?? "—"}</TableCell>
             </TableRow>
           ))}

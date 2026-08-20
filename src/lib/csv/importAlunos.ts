@@ -51,6 +51,7 @@ export async function importAlunosRows(
       turmaId,
       nome: row.nome,
       apelido: row.apelido,
+      posicao: row.posicao,
       ativo: !row.precisaRevisao,
       ataque: row.ataque,
       defesa: row.defesa,

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { listAlunosComTurma } from "@/lib/db/queries/alunos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { nomeTurma } from "@/types/domain";
+import { nomeTurma, POSICAO_JOGADOR_LABEL } from "@/types/domain";
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ export default async function AdminAlunosPage() {
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Turma</TableHead>
+            <TableHead>Posição</TableHead>
             <TableHead>Overall</TableHead>
             <TableHead>Status</TableHead>
             <TableHead />
@@ -42,6 +43,13 @@ export default async function AdminAlunosPage() {
                 )}
               </TableCell>
               <TableCell>{nomeTurma(aluno.turma)}</TableCell>
+              <TableCell>
+                {aluno.posicao ? (
+                  POSICAO_JOGADOR_LABEL[aluno.posicao]
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </TableCell>
               <TableCell>{aluno.overall}</TableCell>
               <TableCell>
                 <Badge variant={aluno.ativo ? "default" : "secondary"}>

@@ -7,8 +7,8 @@ import { requireUser } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { squads, squadSlots, draftSessions, draftRounds, alunos } from "@/lib/db/schema";
 import { getUserSquad, getSquadFull } from "@/lib/db/queries/squads";
-import { sortearTurma } from "@/lib/draft/drawTurma";
-import { ORDEM_POSICOES, posicaoDaRodada } from "@/lib/draft/positionOrder";
+import { sortearTurmaElegivel } from "@/lib/draft/drawTurma";
+import { ORDEM_POSICOES, slotDisponivelParaAluno } from "@/lib/draft/positionOrder";
 import type { ModoDraft } from "@/types/domain";
 
 export interface DraftActionState {
@@ -29,7 +29,12 @@ export async function startDraftAction(
   const modoRaw = formData.get("modo");
   const modo: ModoDraft = modoRaw === "as_cegas" ? "as_cegas" : "classico";
 
-  const turmaRodada1 = await sortearTurma([]);
+  let turmaRodada1;
+  try {
+    turmaRodada1 = await sortearTurmaElegivel([], []);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Erro ao sortear turma." };
+  }
 
   const squadId = await db.transaction(async (tx) => {
     const [squad] = await tx
@@ -50,7 +55,6 @@ export async function startDraftAction(
       draftSessionId: session.id,
       rodadaNumero: 1,
       turmaSorteadaId: turmaRodada1.id,
-      posicaoAlvo: posicaoDaRodada(1),
     });
 
     return squad.id;
@@ -102,19 +106,39 @@ export async function pickAlunoAction(
     return { error: "Esse aluno não pertence à turma sorteada." };
   }
 
-  const proximaRodadaNumero = rodada.rodadaNumero + 1;
-  const ehUltimaRodada = proximaRodadaNumero > ORDEM_POSICOES.length;
+  const posicoesPreenchidas = squad.slots.filter((s) => s.alunoId).map((s) => s.posicao);
+  const slotAlvo = slotDisponivelParaAluno(aluno.posicao, posicoesPreenchidas);
+  if (!slotAlvo) {
+    return {
+      error: aluno.posicao
+        ? "Essa vaga já foi preenchida por outro jogador."
+        : "Esse aluno ainda não tem posição definida. Peça a um admin para completar em /admin/alunos.",
+    };
+  }
+
+  const posicoesAposEscolha = [...posicoesPreenchidas, slotAlvo];
+  const ehUltimaRodada = posicoesAposEscolha.length >= ORDEM_POSICOES.length;
+
+  let proximaTurma: Awaited<ReturnType<typeof sortearTurmaElegivel>> | undefined;
+  if (!ehUltimaRodada) {
+    const turmasJaSorteadas = squad.draftSession!.rounds.map((r) => r.turmaSorteadaId);
+    try {
+      proximaTurma = await sortearTurmaElegivel(turmasJaSorteadas, posicoesAposEscolha);
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Erro ao sortear a próxima turma." };
+    }
+  }
 
   await db.transaction(async (tx) => {
     await tx
       .update(draftRounds)
-      .set({ alunoEscolhidoId: aluno.id, escolhidoEm: new Date() })
+      .set({ alunoEscolhidoId: aluno.id, posicaoAlvo: slotAlvo, escolhidoEm: new Date() })
       .where(eq(draftRounds.id, rodada.id));
 
     await tx
       .update(squadSlots)
       .set({ alunoId: aluno.id, preenchidaEm: new Date() })
-      .where(and(eq(squadSlots.squadId, squadId), eq(squadSlots.posicao, rodada.posicaoAlvo)));
+      .where(and(eq(squadSlots.squadId, squadId), eq(squadSlots.posicao, slotAlvo)));
 
     if (ehUltimaRodada) {
       await tx
@@ -126,13 +150,10 @@ export async function pickAlunoAction(
         .set({ draftConcluido: true })
         .where(eq(squads.id, squadId));
     } else {
-      const turmasJaSorteadas = squad.draftSession!.rounds.map((r) => r.turmaSorteadaId);
-      const proximaTurma = await sortearTurma(turmasJaSorteadas);
       await tx.insert(draftRounds).values({
         draftSessionId: squad.draftSession!.id,
-        rodadaNumero: proximaRodadaNumero,
-        turmaSorteadaId: proximaTurma.id,
-        posicaoAlvo: posicaoDaRodada(proximaRodadaNumero),
+        rodadaNumero: rodada.rodadaNumero + 1,
+        turmaSorteadaId: proximaTurma!.id,
       });
     }
   });

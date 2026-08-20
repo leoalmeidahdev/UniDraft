@@ -44,7 +44,10 @@ Abra http://localhost:3000.
 ## Populando turmas e alunos
 
 1. Prepare um CSV no formato de `supabase/seed/alunos_seed_template.csv`
-   (`ano_letivo,serie,letra,nome_aluno,apelido,ataque,defesa,tecnica,velocidade,fisico,goleiro`).
+   (`ano_letivo,serie,letra,nome_aluno,apelido,posicao,ataque,defesa,tecnica,velocidade,fisico,goleiro`).
+   `posicao` deve ser `GOLEIRO`, `FIXO`, `ALA` ou `PIVO` — define em qual vaga do
+   time esse aluno pode entrar no draft. Sem ela, o aluno é importado inativo
+   (precisa de revisão manual em `/admin/alunos` antes de aparecer no draft).
 2. Importe via script (usa `DATABASE_URL`, direto no Postgres):
    ```bash
    npm run seed:import -- caminho/para/seu-arquivo.csv

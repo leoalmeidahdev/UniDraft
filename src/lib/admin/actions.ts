@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 import { turmas, alunos } from "@/lib/db/schema";
 import { parseAlunosCsv } from "@/lib/csv/parseAlunosCsv";
 import { importAlunosRows } from "@/lib/csv/importAlunos";
-import { SERIES_ENSINO, LETRAS_TURMA } from "@/types/domain";
+import { SERIES_ENSINO, LETRAS_TURMA, POSICOES_JOGADOR } from "@/types/domain";
 
 export interface AdminActionState {
   error?: string;
@@ -67,6 +67,7 @@ const alunoSchema = z.object({
   turmaId: z.string().uuid("Selecione uma turma"),
   nome: z.string().trim().min(1, "Informe o nome"),
   apelido: z.string().trim().optional(),
+  posicao: z.enum(POSICOES_JOGADOR),
   ataque: atributo,
   defesa: atributo,
   tecnica: atributo,
@@ -86,6 +87,7 @@ export async function createAlunoAction(
     turmaId: formData.get("turmaId"),
     nome: formData.get("nome"),
     apelido: formData.get("apelido") || undefined,
+    posicao: formData.get("posicao"),
     ataque: formData.get("ataque"),
     defesa: formData.get("defesa"),
     tecnica: formData.get("tecnica"),
@@ -116,6 +118,7 @@ export async function updateAlunoAction(
     turmaId: formData.get("turmaId"),
     nome: formData.get("nome"),
     apelido: formData.get("apelido") || undefined,
+    posicao: formData.get("posicao"),
     ataque: formData.get("ataque"),
     defesa: formData.get("defesa"),
     tecnica: formData.get("tecnica"),

@@ -15,6 +15,18 @@ export const POSICAO_LABEL: Record<PosicaoFutsal, string> = {
   PIVO: "Pivô",
 };
 
+/** Posição natural do jogador (atributo do aluno) — distinta da vaga do squad (PosicaoFutsal),
+ * já que ALA_1 e ALA_2 são duas vagas para o mesmo tipo de jogador ("Ala"). */
+export const POSICOES_JOGADOR = ["GOLEIRO", "FIXO", "ALA", "PIVO"] as const;
+export type PosicaoJogador = (typeof POSICOES_JOGADOR)[number];
+
+export const POSICAO_JOGADOR_LABEL: Record<PosicaoJogador, string> = {
+  GOLEIRO: "Goleiro",
+  FIXO: "Fixo",
+  ALA: "Ala",
+  PIVO: "Pivô",
+};
+
 export const SERIES_ENSINO = ["1", "2", "3"] as const;
 export type SerieEnsino = (typeof SERIES_ENSINO)[number];
 

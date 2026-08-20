@@ -31,8 +31,9 @@ export function CsvImportForm() {
         </div>
         <p className="text-xs text-muted-foreground">
           Colunas esperadas: ano_letivo, serie, letra, nome_aluno, apelido,
-          ataque, defesa, tecnica, velocidade, fisico, goleiro. Atributos em
-          branco viram 50 (20 no goleiro) e o aluno é marcado para revisão.
+          posicao (GOLEIRO, FIXO, ALA ou PIVO), ataque, defesa, tecnica,
+          velocidade, fisico, goleiro. Atributos em branco viram 50 (20 no
+          goleiro); sem posicao, o aluno é marcado para revisão.
         </p>
         <div>
           <SubmitButton />

@@ -26,6 +26,12 @@ export const posicaoFutsal = pgEnum("posicao_futsal", [
   "ALA_2",
   "PIVO",
 ]);
+export const posicaoJogador = pgEnum("posicao_jogador", [
+  "GOLEIRO",
+  "FIXO",
+  "ALA",
+  "PIVO",
+]);
 export const modoDraft = pgEnum("modo_draft", ["classico", "as_cegas"]);
 export const statusDraft = pgEnum("status_draft", [
   "em_andamento",
@@ -115,6 +121,10 @@ export const alunos = pgTable(
     apelido: text("apelido"),
     fotoUrl: text("foto_url"),
     ativo: boolean("ativo").notNull().default(true),
+    // posição natural do jogador (define em qual vaga do squad ele pode entrar, ver
+    // src/lib/draft/positionOrder.ts). Nullable: alunos importados antes dessa coluna
+    // existir ficam de fora do draft até um admin definir a posição em /admin/alunos.
+    posicao: posicaoJogador("posicao"),
     ataque: smallint("ataque").notNull(),
     defesa: smallint("defesa").notNull(),
     tecnica: smallint("tecnica").notNull(),
@@ -212,7 +222,9 @@ export const draftRounds = pgTable(
     turmaSorteadaId: uuid("turma_sorteada_id")
       .notNull()
       .references(() => turmas.id),
-    posicaoAlvo: posicaoFutsal("posicao_alvo").notNull(),
+    // preenchida só depois da escolha: é a vaga do squad que o aluno escolhido ocupou
+    // (definida pela posição natural dele, não mais fixa por número de rodada).
+    posicaoAlvo: posicaoFutsal("posicao_alvo"),
     alunoEscolhidoId: uuid("aluno_escolhido_id").references(() => alunos.id),
     sorteadoEm: timestamp("sorteado_em", { withTimezone: true })
       .notNull()
