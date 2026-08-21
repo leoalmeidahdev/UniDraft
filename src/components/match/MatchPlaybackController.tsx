@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { LiveScoreboard } from "@/components/match/LiveScoreboard";
 import { EventTimeline, type EventoTimeline } from "@/components/match/EventTimeline";
-
-const DURACAO_JOGO_MIN = 40;
+import { PlaybackSpeedControl, type PlaybackSpeed } from "@/components/match/PlaybackSpeedControl";
+import { MatchRatingsPanel } from "@/components/match/MatchRatingsPanel";
+import { DURACAO_JOGO_MIN } from "@/lib/simulation/simulateMatch";
+import type { PlayerRating } from "@/lib/match/ratings";
 
 export interface EventoPlayback extends EventoTimeline {
   offsetPlaybackMs: number;
@@ -26,19 +28,35 @@ export interface MatchPlaybackData {
  * localmente `agora - iniciadaEm` e revela os eventos cujo offsetPlaybackMs já passou —
  * como os dois usam a mesma âncora `iniciadaEm`, o playback fica sincronizado entre eles.
  */
-export function MatchPlaybackController({ data }: { data: MatchPlaybackData }) {
+export function MatchPlaybackController({
+  data,
+  ratings,
+  mvp,
+}: {
+  data: MatchPlaybackData;
+  /** Notas + melhor jogador (Item 7) — opcionais: só renderiza o painel quando presentes,
+   * revelado apenas quando `finalizado` vira true (mesmo gate do placar/eventos revelados). */
+  ratings?: PlayerRating[];
+  mvp?: PlayerRating | null;
+}) {
   const iniciadaEmMs = new Date(data.iniciadaEmISO).getTime();
   const duracaoMs = data.duracaoPlaybackSeg * 1000;
 
   const [elapsedMs, setElapsedMs] = useState(() => Date.now() - iniciadaEmMs);
+  const [speed, setSpeed] = useState<PlaybackSpeed>(1);
 
   useEffect(() => {
-    if (elapsedMs >= duracaoMs) return;
+    if (elapsedMs >= duracaoMs || speed === "instant") return;
     const intervalo = setInterval(() => {
-      setElapsedMs(Date.now() - iniciadaEmMs);
+      setElapsedMs((prev) => Math.min(prev + 500 * speed, duracaoMs));
     }, 500);
     return () => clearInterval(intervalo);
-  }, [iniciadaEmMs, duracaoMs, elapsedMs]);
+  }, [duracaoMs, elapsedMs, speed]);
+
+  function handleSpeedChange(novaSpeed: PlaybackSpeed) {
+    setSpeed(novaSpeed);
+    if (novaSpeed === "instant") setElapsedMs(duracaoMs);
+  }
 
   const finalizado = elapsedMs >= duracaoMs;
   const elapsedClamped = Math.min(elapsedMs, duracaoMs);
@@ -69,7 +87,21 @@ export function MatchPlaybackController({ data }: { data: MatchPlaybackData }) {
         minutoAtual={minutoAtual}
         finalizado={finalizado}
       />
-      <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
+      {!finalizado && <PlaybackSpeedControl speed={speed} onSpeedChange={handleSpeedChange} />}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-muted-foreground">Linha do tempo</h2>
+        <div className="overflow-x-auto">
+          <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
+        </div>
+      </div>
+      {finalizado && ratings && ratings.length > 0 && (
+        <MatchRatingsPanel
+          ratings={ratings}
+          mvp={mvp ?? null}
+          squadHomeId={data.squadHome.id}
+          squadAwayId={data.squadAway.id}
+        />
+      )}
     </div>
   );
 }

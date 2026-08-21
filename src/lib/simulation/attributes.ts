@@ -1,4 +1,12 @@
-import type { PosicaoFutsal } from "@/types/domain";
+import {
+  ESTILO_INFO,
+  ESTILO_PADRAO,
+  FORMACAO_INFO,
+  FORMACAO_PADRAO,
+  type EstiloTatico,
+  type Formacao,
+  type PosicaoFutsal,
+} from "@/types/domain";
 
 export interface JogadorAtributos {
   ataque: number;
@@ -45,22 +53,42 @@ function mediaPonderada(valores: { valor: number; peso: number }[]): number {
   return valores.reduce((acc, v) => acc + v.valor * v.peso, 0) / totalPeso;
 }
 
-export function forcaOfensivaTime(titulares: Titular[]): number {
-  return mediaPonderada(
+/**
+ * Força ofensiva do time: média ponderada por posição (PESO_OFENSIVO) ajustada pelo
+ * peso da vaga na formação escolhida (FORMACAO_INFO[formacao].pesoAtaque, 1 = neutro)
+ * e depois escalada pelo multiplicador de estilo tático do time inteiro
+ * (ESTILO_INFO[estilo].multAtaque). Com FORMACAO_PADRAO + ESTILO_PADRAO o resultado
+ * é o mesmo de antes desta função existir (pesos e multiplicador ~1).
+ */
+export function forcaOfensivaTime(
+  titulares: Titular[],
+  formacao: Formacao = FORMACAO_PADRAO,
+  estilo: EstiloTatico = ESTILO_PADRAO
+): number {
+  const pesoFormacao = FORMACAO_INFO[formacao].pesoAtaque;
+  const base = mediaPonderada(
     titulares.map((t) => ({
       valor: forcaOfensivaJogador(t.jogador),
-      peso: PESO_OFENSIVO[t.posicao],
+      peso: PESO_OFENSIVO[t.posicao] * pesoFormacao[t.posicao],
     }))
   );
+  return base * ESTILO_INFO[estilo].multAtaque;
 }
 
-export function forcaDefensivaTime(titulares: Titular[]): number {
-  return mediaPonderada(
+/** Espelho defensivo de forcaOfensivaTime: pesoDefesa da formação + multDefesa do estilo. */
+export function forcaDefensivaTime(
+  titulares: Titular[],
+  formacao: Formacao = FORMACAO_PADRAO,
+  estilo: EstiloTatico = ESTILO_PADRAO
+): number {
+  const pesoFormacao = FORMACAO_INFO[formacao].pesoDefesa;
+  const base = mediaPonderada(
     titulares.map((t) => ({
       valor: forcaDefensivaJogador(t.jogador, t.posicao),
-      peso: PESO_DEFENSIVO[t.posicao],
+      peso: PESO_DEFENSIVO[t.posicao] * pesoFormacao[t.posicao],
     }))
   );
+  return base * ESTILO_INFO[estilo].multDefesa;
 }
 
 export function pesoOfensivoPosicao(posicao: PosicaoFutsal): number {

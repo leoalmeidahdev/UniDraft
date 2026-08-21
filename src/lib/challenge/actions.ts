@@ -6,66 +6,34 @@ import { eq } from "drizzle-orm";
 import { requireUser } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { challenges } from "@/lib/db/schema";
-import { getUserSquad } from "@/lib/db/queries/squads";
+import { getSquadByIdentity } from "@/lib/db/queries/squads";
 import { findFriendshipBetween } from "@/lib/db/queries/friendships";
 import { getChallengeForUser } from "@/lib/db/queries/challenges";
-import { createMatchFromChallenge, getBotSquadId } from "@/lib/challenge/matchmaking";
-import type { BotDificuldade, TipoDesafiado } from "@/types/domain";
+import { createMatchFromChallenge } from "@/lib/challenge/matchmaking";
+import type { TipoDesafiado } from "@/types/domain";
 
 export interface ChallengeActionState {
   error?: string;
 }
 
-const DIFICULDADES: BotDificuldade[] = ["facil", "medio", "dificil"];
-
+/**
+ * /desafios é só desafio de amigo — partida vs bot não passa mais por aqui
+ * nem pela tabela challenges (ver src/lib/match/actions.ts): amizade é ligada
+ * a conta (friendships.userId/friendId são FK NOT NULL pra profiles), então
+ * essa rota continua exigindo requireUser() corretamente.
+ */
 export async function createChallengeAction(
   _prevState: ChallengeActionState,
   formData: FormData
 ): Promise<ChallengeActionState> {
   const user = await requireUser();
 
-  const meuSquad = await getUserSquad(user.id);
+  const meuSquad = await getSquadByIdentity({ kind: "user", id: user.id });
   if (!meuSquad || !meuSquad.draftConcluido) {
     return { error: "Complete seu time no draft antes de desafiar alguém." };
   }
 
   const tipo = String(formData.get("tipo") ?? "") as TipoDesafiado;
-
-  if (tipo === "bot") {
-    const dificuldade = String(formData.get("botDificuldade") ?? "") as BotDificuldade;
-    if (!DIFICULDADES.includes(dificuldade)) {
-      return { error: "Escolha uma dificuldade válida." };
-    }
-
-    let botSquadId: string;
-    try {
-      botSquadId = await getBotSquadId(dificuldade);
-    } catch (err) {
-      return { error: err instanceof Error ? err.message : "Erro ao buscar o bot." };
-    }
-
-    const [challenge] = await db
-      .insert(challenges)
-      .values({
-        challengerUserId: user.id,
-        challengerSquadId: meuSquad.id,
-        tipo: "bot",
-        botDificuldade: dificuldade,
-        challengedSquadId: botSquadId,
-        status: "aceito",
-        respondidoEm: new Date(),
-      })
-      .returning({ id: challenges.id });
-
-    const matchId = await createMatchFromChallenge({
-      challengeId: challenge.id,
-      squadHomeId: meuSquad.id,
-      squadAwayId: botSquadId,
-      isBotMatch: true,
-    });
-
-    redirect(`/partida/${matchId}`);
-  }
 
   if (tipo === "amigo") {
     const targetUserId = String(formData.get("challengedUserId") ?? "");
@@ -76,7 +44,7 @@ export async function createChallengeAction(
       return { error: "Vocês precisam ser amigos para se desafiar." };
     }
 
-    const squadAmigo = await getUserSquad(targetUserId);
+    const squadAmigo = await getSquadByIdentity({ kind: "user", id: targetUserId });
     if (!squadAmigo || !squadAmigo.draftConcluido) {
       return { error: "Esse amigo ainda não completou o time dele." };
     }
@@ -106,7 +74,7 @@ export async function acceptChallengeAction(formData: FormData) {
     return;
   }
 
-  const meuSquad = await getUserSquad(user.id);
+  const meuSquad = await getSquadByIdentity({ kind: "user", id: user.id });
   if (!meuSquad || !meuSquad.draftConcluido) return;
 
   await db

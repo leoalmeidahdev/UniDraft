@@ -6,8 +6,8 @@ export async function getMatchFull(matchId: string) {
   return db.query.matches.findFirst({
     where: eq(matches.id, matchId),
     with: {
-      squadHome: { with: { user: true } },
-      squadAway: { with: { user: true } },
+      squadHome: { with: { user: true, slots: { with: { aluno: true } } } },
+      squadAway: { with: { user: true, slots: { with: { aluno: true } } } },
       events: { orderBy: (e, { asc }) => [asc(e.ordem)] },
     },
   });

@@ -32,12 +32,6 @@ export const posicaoJogador = pgEnum("posicao_jogador", [
   "ALA",
   "PIVO",
 ]);
-export const modoDraft = pgEnum("modo_draft", ["classico", "as_cegas"]);
-export const statusDraft = pgEnum("status_draft", [
-  "em_andamento",
-  "concluido",
-  "abandonado",
-]);
 export const statusAmizade = pgEnum("status_amizade", [
   "pendente",
   "aceito",
@@ -63,9 +57,22 @@ export const tipoEventoPartida = pgEnum("tipo_evento_partida", [
   "defesa",
   "falta",
   "cartao",
+  "cartao_vermelho",
+  "falta_direta",
   "inicio_tempo",
   "fim_tempo",
+  "intervalo",
   "chance_perdida",
+]);
+export const statusTorneio = pgEnum("status_torneio", [
+  "lobby",
+  "em_andamento",
+  "finalizado",
+]);
+export const statusChave = pgEnum("status_chave", [
+  "aguardando",
+  "pronta",
+  "concluida",
 ]);
 
 // ==========================================================
@@ -122,8 +129,9 @@ export const alunos = pgTable(
     fotoUrl: text("foto_url"),
     ativo: boolean("ativo").notNull().default(true),
     // posição natural do jogador (define em qual vaga do squad ele pode entrar, ver
-    // src/lib/draft/positionOrder.ts). Nullable: alunos importados antes dessa coluna
-    // existir ficam de fora do draft até um admin definir a posição em /admin/alunos.
+    // src/lib/draft/positionOrder.ts e src/lib/squad/formSquad.ts). Nullable: alunos
+    // importados antes dessa coluna existir ficam fora do sorteio de squad até um
+    // admin definir a posição em /admin/alunos.
     posicao: posicaoJogador("posicao"),
     ataque: smallint("ataque").notNull(),
     defesa: smallint("defesa").notNull(),
@@ -159,21 +167,39 @@ export const alunos = pgTable(
 // ==========================================================
 // SQUADS
 // ==========================================================
-export const squads = pgTable("squads", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => profiles.id, { onDelete: "cascade" }),
-  nome: text("nome").notNull().default("Meu Time"),
-  formacao: text("formacao").notNull().default("classica"),
-  draftConcluido: boolean("draft_concluido").notNull().default(false),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+export const squads = pgTable(
+  "squads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // dono é ou um profile (conta real) ou um visitante identificado só por
+    // cookie (guestId) — nunca os dois, ver check squads_owner_xor.
+    userId: uuid("user_id").references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
+    guestId: text("guest_id"),
+    nome: text("nome").notNull().default("Meu Time"),
+    // tática do time: formação de futsal ("1-2-1", "2-2", "3-1", "4-0") e
+    // postura ("defensivo" | "equilibrado" | "ofensivo"). Ambas entram no
+    // cálculo de força em src/lib/simulation/attributes.ts. Squads criados
+    // antes das formações reais gravaram "classica" em formacao — ler sempre
+    // via parseFormacao/parseEstilo (src/types/domain.ts).
+    formacao: text("formacao").notNull().default("1-2-1"),
+    estilo: text("estilo").notNull().default("equilibrado"),
+    draftConcluido: boolean("draft_concluido").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    check(
+      "squads_owner_xor",
+      sql`(${table.userId} is not null) <> (${table.guestId} is not null)`
+    ),
+  ]
+);
 
 export const squadSlots = pgTable(
   "squad_slots",
@@ -188,58 +214,6 @@ export const squadSlots = pgTable(
   },
   (table) => [
     unique("squad_slots_squad_posicao_key").on(table.squadId, table.posicao),
-  ]
-);
-
-// ==========================================================
-// DRAFT
-// ==========================================================
-export const draftSessions = pgTable(
-  "draft_sessions",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    squadId: uuid("squad_id")
-      .notNull()
-      .references(() => squads.id, { onDelete: "cascade" }),
-    modo: modoDraft("modo").notNull().default("classico"),
-    status: statusDraft("status").notNull().default("em_andamento"),
-    iniciadoEm: timestamp("iniciado_em", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    concluidoEm: timestamp("concluido_em", { withTimezone: true }),
-  },
-  (table) => [unique("draft_sessions_squad_key").on(table.squadId)]
-);
-
-export const draftRounds = pgTable(
-  "draft_rounds",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    draftSessionId: uuid("draft_session_id")
-      .notNull()
-      .references(() => draftSessions.id, { onDelete: "cascade" }),
-    rodadaNumero: smallint("rodada_numero").notNull(),
-    turmaSorteadaId: uuid("turma_sorteada_id")
-      .notNull()
-      .references(() => turmas.id),
-    // preenchida só depois da escolha: é a vaga do squad que o aluno escolhido ocupou
-    // (definida pela posição natural dele, não mais fixa por número de rodada).
-    posicaoAlvo: posicaoFutsal("posicao_alvo"),
-    alunoEscolhidoId: uuid("aluno_escolhido_id").references(() => alunos.id),
-    sorteadoEm: timestamp("sorteado_em", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    escolhidoEm: timestamp("escolhido_em", { withTimezone: true }),
-  },
-  (table) => [
-    unique("draft_rounds_session_rodada_key").on(
-      table.draftSessionId,
-      table.rodadaNumero
-    ),
-    check(
-      "draft_rounds_rodada_range",
-      sql`${table.rodadaNumero} between 1 and 5`
-    ),
   ]
 );
 
@@ -283,10 +257,12 @@ export const challenges = pgTable("challenges", {
     .references(() => profiles.id),
   challengerSquadId: uuid("challenger_squad_id")
     .notNull()
-    .references(() => squads.id),
+    .references(() => squads.id, { onDelete: "cascade" }),
   tipo: tipoDesafiado("tipo").notNull(),
   challengedUserId: uuid("challenged_user_id").references(() => profiles.id),
-  challengedSquadId: uuid("challenged_squad_id").references(() => squads.id),
+  challengedSquadId: uuid("challenged_squad_id").references(() => squads.id, {
+    onDelete: "cascade",
+  }),
   botDificuldade: text("bot_dificuldade"),
   status: statusDesafio("status").notNull().default("pendente"),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -303,10 +279,10 @@ export const matches = pgTable("matches", {
   challengeId: uuid("challenge_id").references(() => challenges.id),
   squadHomeId: uuid("squad_home_id")
     .notNull()
-    .references(() => squads.id),
+    .references(() => squads.id, { onDelete: "cascade" }),
   squadAwayId: uuid("squad_away_id")
     .notNull()
-    .references(() => squads.id),
+    .references(() => squads.id, { onDelete: "cascade" }),
   isBotMatch: boolean("is_bot_match").notNull().default(false),
   status: statusPartida("status").notNull().default("agendada"),
   seed: bigint("seed", { mode: "bigint" }).notNull(),
@@ -331,7 +307,7 @@ export const matchEvents = pgTable(
     minutoJogo: smallint("minuto_jogo").notNull(),
     offsetPlaybackMs: integer("offset_playback_ms").notNull(),
     tipo: tipoEventoPartida("tipo").notNull(),
-    squadId: uuid("squad_id").references(() => squads.id),
+    squadId: uuid("squad_id").references(() => squads.id, { onDelete: "cascade" }),
     alunoId: uuid("aluno_id").references(() => alunos.id),
     descricao: text("descricao").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -340,6 +316,122 @@ export const matchEvents = pgTable(
   },
   (table) => [
     unique("match_events_match_ordem_key").on(table.matchId, table.ordem),
+  ]
+);
+
+// ==========================================================
+// TORNEIOS (mata-mata)
+// ==========================================================
+export const tournaments = pgTable(
+  "tournaments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // dono/anfitrião do torneio: conta ou visitante, nunca os dois (mesmo
+    // padrão de squads.userId/guestId, ver src/lib/auth/guards.ts).
+    hostUserId: uuid("host_user_id").references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
+    hostGuestId: text("host_guest_id"),
+    bracketSize: smallint("bracket_size").notNull(),
+    status: statusTorneio("status").notNull().default("lobby"),
+    // código de 6 caracteres pra convidar um amigo; só válido enquanto
+    // status = "lobby" (ver src/lib/tournament/actions.ts).
+    lobbyCode: text("lobby_code").unique(),
+    rodadaAtual: smallint("rodada_atual").notNull().default(1),
+    // FK solta (sem .references) pra tournament_entries.id: evita ciclo de
+    // declaração entre as duas tabelas — a constraint de verdade é criada
+    // na migration manual (ver supabase/migrations).
+    vencedorEntryId: uuid("vencedor_entry_id"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    iniciadoEm: timestamp("iniciado_em", { withTimezone: true }),
+    finalizadoEm: timestamp("finalizado_em", { withTimezone: true }),
+  },
+  (table) => [
+    check(
+      "tournaments_host_xor",
+      sql`(${table.hostUserId} is not null) <> (${table.hostGuestId} is not null)`
+    ),
+    check(
+      "tournaments_bracket_size",
+      sql`${table.bracketSize} in (8, 16)`
+    ),
+  ]
+);
+
+export const tournamentEntries = pgTable(
+  "tournament_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tournamentId: uuid("tournament_id")
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    squadId: uuid("squad_id")
+      .notNull()
+      .references(() => squads.id, { onDelete: "cascade" }),
+    ownerUserId: uuid("owner_user_id").references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
+    ownerGuestId: text("owner_guest_id"),
+    isBot: boolean("is_bot").notNull().default(false),
+    // null até o torneio começar (gerarPareamento define os slots de uma vez).
+    slot: smallint("slot"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    unique("tournament_entries_squad_key").on(table.tournamentId, table.squadId),
+    unique("tournament_entries_slot_key").on(table.tournamentId, table.slot),
+    check(
+      "tournament_entries_owner_xor",
+      sql`${table.isBot} or ((${table.ownerUserId} is not null) <> (${table.ownerGuestId} is not null))`
+    ),
+  ]
+);
+
+export const tournamentMatches = pgTable(
+  "tournament_matches",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tournamentId: uuid("tournament_id")
+      .notNull()
+      .references(() => tournaments.id, { onDelete: "cascade" }),
+    // 1 = primeira rodada; a partida `p` da rodada seguinte é alimentada
+    // pelas partidas `2p` e `2p+1` desta rodada (posicaoNaRodada 0-indexed).
+    rodada: smallint("rodada").notNull(),
+    posicaoNaRodada: smallint("posicao_na_rodada").notNull(),
+    entryHomeId: uuid("entry_home_id").references(() => tournamentEntries.id, {
+      onDelete: "set null",
+    }),
+    entryAwayId: uuid("entry_away_id").references(() => tournamentEntries.id, {
+      onDelete: "set null",
+    }),
+    matchId: uuid("match_id").references(() => matches.id, {
+      onDelete: "set null",
+    }),
+    vencedorEntryId: uuid("vencedor_entry_id").references(
+      () => tournamentEntries.id,
+      { onDelete: "set null" }
+    ),
+    status: statusChave("status").notNull().default("aguardando"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    unique("tournament_matches_posicao_key").on(
+      table.tournamentId,
+      table.rodada,
+      table.posicaoNaRodada
+    ),
   ]
 );
 
@@ -357,7 +449,6 @@ export const alunosRelations = relations(alunos, ({ one }) => ({
 export const squadsRelations = relations(squads, ({ one, many }) => ({
   user: one(profiles, { fields: [squads.userId], references: [profiles.id] }),
   slots: many(squadSlots),
-  draftSession: one(draftSessions),
 }));
 
 export const squadSlotsRelations = relations(squadSlots, ({ one }) => ({
@@ -367,32 +458,6 @@ export const squadSlotsRelations = relations(squadSlots, ({ one }) => ({
   }),
   aluno: one(alunos, {
     fields: [squadSlots.alunoId],
-    references: [alunos.id],
-  }),
-}));
-
-export const draftSessionsRelations = relations(
-  draftSessions,
-  ({ one, many }) => ({
-    squad: one(squads, {
-      fields: [draftSessions.squadId],
-      references: [squads.id],
-    }),
-    rounds: many(draftRounds),
-  })
-);
-
-export const draftRoundsRelations = relations(draftRounds, ({ one }) => ({
-  session: one(draftSessions, {
-    fields: [draftRounds.draftSessionId],
-    references: [draftSessions.id],
-  }),
-  turmaSorteada: one(turmas, {
-    fields: [draftRounds.turmaSorteadaId],
-    references: [turmas.id],
-  }),
-  alunoEscolhido: one(alunos, {
-    fields: [draftRounds.alunoEscolhidoId],
     references: [alunos.id],
   }),
 }));
@@ -416,3 +481,46 @@ export const matchEventsRelations = relations(matchEvents, ({ one }) => ({
   }),
   aluno: one(alunos, { fields: [matchEvents.alunoId], references: [alunos.id] }),
 }));
+
+export const tournamentsRelations = relations(tournaments, ({ many }) => ({
+  entries: many(tournamentEntries),
+  matches: many(tournamentMatches),
+}));
+
+export const tournamentEntriesRelations = relations(
+  tournamentEntries,
+  ({ one }) => ({
+    tournament: one(tournaments, {
+      fields: [tournamentEntries.tournamentId],
+      references: [tournaments.id],
+    }),
+    squad: one(squads, {
+      fields: [tournamentEntries.squadId],
+      references: [squads.id],
+    }),
+  })
+);
+
+export const tournamentMatchesRelations = relations(
+  tournamentMatches,
+  ({ one }) => ({
+    tournament: one(tournaments, {
+      fields: [tournamentMatches.tournamentId],
+      references: [tournaments.id],
+    }),
+    entryHome: one(tournamentEntries, {
+      fields: [tournamentMatches.entryHomeId],
+      references: [tournamentEntries.id],
+      relationName: "entryHome",
+    }),
+    entryAway: one(tournamentEntries, {
+      fields: [tournamentMatches.entryAwayId],
+      references: [tournamentEntries.id],
+      relationName: "entryAway",
+    }),
+    match: one(matches, {
+      fields: [tournamentMatches.matchId],
+      references: [matches.id],
+    }),
+  })
+);

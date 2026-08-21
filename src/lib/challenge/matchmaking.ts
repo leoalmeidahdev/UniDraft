@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq, like } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { matches, matchEvents, profiles, squads } from "@/lib/db/schema";
 import { getSquadFull } from "@/lib/db/queries/squads";
 import { simulateMatch, type SquadSimulado } from "@/lib/simulation/simulateMatch";
-import type { BotDificuldade } from "@/types/domain";
+import { parseEstilo, parseFormacao } from "@/types/domain";
 
 export async function squadFullToSimulado(squadId: string): Promise<SquadSimulado> {
   const squad = await getSquadFull(squadId);
@@ -29,27 +29,38 @@ export async function squadFullToSimulado(squadId: string): Promise<SquadSimulad
     throw new Error("Esse time ainda não está completo.");
   }
 
-  return { id: squad.id, titulares };
+  return {
+    id: squad.id,
+    titulares,
+    formacao: parseFormacao(squad.formacao),
+    estilo: parseEstilo(squad.estilo),
+  };
 }
 
-export async function getBotSquadId(dificuldade: BotDificuldade): Promise<string> {
-  const username = `bot_${dificuldade}`;
-  const [profile] = await db.select().from(profiles).where(eq(profiles.username, username)).limit(1);
-  if (!profile) {
-    throw new Error(`Bot "${dificuldade}" ainda não configurado. Peça a um admin para rodar "npm run seed:bots".`);
+/** Squad de um bot de turma aleatório, com draft já concluído (um por turma, ver scripts/seed-bots.ts). */
+export async function getBotSquadIdAleatorio(): Promise<string> {
+  const candidatos = await db
+    .select({ squadId: squads.id })
+    .from(profiles)
+    .innerJoin(squads, eq(squads.userId, profiles.id))
+    .where(
+      and(
+        like(profiles.username, "bot_turma_%"),
+        eq(squads.draftConcluido, true)
+      )
+    );
+
+  if (candidatos.length === 0) {
+    throw new Error('Nenhum bot de turma configurado ainda. Peça a um admin para rodar "npm run seed:bots".');
   }
-  const [squad] = await db.select().from(squads).where(eq(squads.userId, profile.id)).limit(1);
-  if (!squad) {
-    throw new Error(`Bot "${dificuldade}" ainda sem time. Peça a um admin para rodar "npm run seed:bots".`);
-  }
-  return squad.id;
+  return candidatos[Math.floor(Math.random() * candidatos.length)].squadId;
 }
 
 /** Simula a partida inteira de uma vez e grava placar + eventos, prontos para playback sincronizado no client. */
-export async function createMatchFromChallenge(params: {
-  challengeId: string;
+export async function simularEPersistirPartida(params: {
   squadHomeId: string;
   squadAwayId: string;
+  challengeId?: string;
   isBotMatch: boolean;
 }): Promise<string> {
   const [squadHome, squadAway] = await Promise.all([
@@ -66,7 +77,7 @@ export async function createMatchFromChallenge(params: {
     const [match] = await tx
       .insert(matches)
       .values({
-        challengeId: params.challengeId,
+        challengeId: params.challengeId ?? null,
         squadHomeId: params.squadHomeId,
         squadAwayId: params.squadAwayId,
         isBotMatch: params.isBotMatch,
@@ -94,4 +105,14 @@ export async function createMatchFromChallenge(params: {
 
     return match.id;
   });
+}
+
+/** Compatibilidade com o fluxo de desafios (src/lib/challenge/actions.ts). */
+export async function createMatchFromChallenge(params: {
+  challengeId: string;
+  squadHomeId: string;
+  squadAwayId: string;
+  isBotMatch: boolean;
+}): Promise<string> {
+  return simularEPersistirPartida(params);
 }

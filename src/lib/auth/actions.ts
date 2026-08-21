@@ -89,5 +89,5 @@ export async function signUpAction(
     return { info: "Conta criada! Confira seu e-mail para confirmar o cadastro antes de entrar." };
   }
 
-  redirect("/draft");
+  redirect("/meu-time");
 }

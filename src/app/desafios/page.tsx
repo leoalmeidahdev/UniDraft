@@ -67,9 +67,12 @@ export default async function DesafiosPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {outros.map((c) => {
+              // Desafio contra bot não passa mais pela tabela challenges (ver
+              // jogarContraBotAction em src/lib/match/actions.ts), então só
+              // sobra o ramo de desafio de amigo aqui.
               const souEuOChallenger = c.challengerUserId === user.id;
               const nomeOponente = souEuOChallenger
-                ? (c.tipo === "bot" ? `Bot (${c.botDificuldade})` : c.challenged?.displayName ?? "?")
+                ? c.challenged?.displayName ?? "?"
                 : c.challenger.displayName;
               return (
                 <Card key={c.id}>

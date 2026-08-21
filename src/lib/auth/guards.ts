@@ -1,9 +1,17 @@
 import "server-only";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { createClient } from "@/lib/supabase/server";
+
+/** Nome do cookie de identidade de visitante, setado pelo Proxy (src/proxy.ts). */
+export const GUEST_COOKIE = "uni_draft_guest_id";
+
+export type PlayerIdentity =
+  | ({ kind: "user" } & AuthedProfile)
+  | { kind: "guest"; id: string };
 
 export interface AuthedProfile {
   id: string;
@@ -81,4 +89,34 @@ export async function requireAdmin(): Promise<AuthedProfile> {
     redirect("/meu-time");
   }
   return profile;
+}
+
+/**
+ * Identidade de quem está jogando: conta real ou visitante (cookie).
+ * Usar no lugar de requireUser() nas rotas de jogo (/meu-time, /torneio,
+ * /partida), que não exigem mais conta. O Proxy (src/proxy.ts) garante que o
+ * cookie de visitante já existe antes da requisição chegar aqui.
+ */
+export async function requirePlayerIdentity(): Promise<PlayerIdentity> {
+  const user = await getOptionalUser();
+  if (user) {
+    return { kind: "user", ...user };
+  }
+
+  const guestId = (await cookies()).get(GUEST_COOKIE)?.value;
+  if (!guestId) {
+    redirect("/meu-time");
+  }
+
+  return { kind: "guest", id: guestId };
+}
+
+/** Compara o dono de um squad (conta ou visitante) com a identidade atual. */
+export function ownsSquad(
+  squad: { userId: string | null; guestId: string | null },
+  identity: PlayerIdentity
+): boolean {
+  return identity.kind === "user"
+    ? squad.userId === identity.id
+    : squad.guestId === identity.id;
 }

@@ -1,13 +1,20 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { squads, squadSlots, draftSessions, draftRounds, alunos, turmas } from "@/lib/db/schema";
+import { squads, squadSlots, alunos, turmas } from "@/lib/db/schema";
 
-/** Squad mais recente do usuário (não há suporte a múltiplos squads simultâneos no MVP). */
-export async function getUserSquad(userId: string) {
+/** Dono de um squad: uma conta (profile) ou um visitante (cookie). */
+export type SquadOwnerRef = { kind: "user" | "guest"; id: string };
+
+/** Squad mais recente do dono (não há suporte a múltiplos squads simultâneos no MVP). */
+export async function getSquadByIdentity(owner: SquadOwnerRef) {
   const [squad] = await db
     .select()
     .from(squads)
-    .where(eq(squads.userId, userId))
+    .where(
+      owner.kind === "user"
+        ? eq(squads.userId, owner.id)
+        : eq(squads.guestId, owner.id)
+    )
     .orderBy(desc(squads.createdAt))
     .limit(1);
   return squad ?? null;
@@ -19,17 +26,6 @@ export async function getSquadFull(squadId: string) {
     with: {
       slots: {
         with: { aluno: { with: { turma: true } } },
-      },
-      draftSession: {
-        with: {
-          rounds: {
-            with: {
-              turmaSorteada: true,
-              alunoEscolhido: true,
-            },
-            orderBy: (r, { asc }) => [asc(r.rodadaNumero)],
-          },
-        },
       },
     },
   });
@@ -48,4 +44,4 @@ export async function getTurmaComAlunos(turmaId: string) {
   return turma ?? null;
 }
 
-export { squads, squadSlots, draftSessions, draftRounds };
+export { squads, squadSlots };

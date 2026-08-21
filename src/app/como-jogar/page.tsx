@@ -1,29 +1,90 @@
-const SECOES = [
+import type { ElementType, ReactNode } from "react";
+import { Dices, Users, Clock, Swords } from "@/components/icons";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface Secao {
+  titulo: string;
+  icone: ElementType;
+  paragrafos: ReactNode[];
+}
+
+function Num({ children }: { children: ReactNode }) {
+  return <span className="num text-destaque font-semibold">{children}</span>;
+}
+
+const SECOES: Secao[] = [
   {
-    titulo: "1. O sorteio de turmas",
+    titulo: "Rodada rápida, sem conta",
+    icone: Dices,
     paragrafos: [
-      "Ao iniciar um draft, você escolhe o modo de jogo: Clássico (os atributos dos colegas ficam visíveis) ou Às Cegas (os atributos ficam ocultos até você escalar o jogador).",
-      "A cada rodada, o sistema sorteia uma turma da escola — ano letivo (2024, 2025 ou 2026), série (1º ao 3º ano) e letra (A a L). Você vê a lista de colegas daquela turma e escolhe um deles para o seu time.",
+      <>
+        Não existe conta obrigatória: clique em &quot;Jogar agora&quot;,
+        escolha a formação e o estilo do time e monte o elenco rolando
+        salas — a cada rolagem, uma turma da escola é sorteada (ano letivo,
+        série e letra) e você escolhe um colega dela pra ocupar a posição
+        da vez, repetindo até fechar as <Num>5</Num> posições.
+      </>,
+      <>
+        Não curtiu a turma sorteada? Peça &quot;Outra sala&quot; pra sortear
+        outra turma, ou &quot;Outro ano&quot; pra ver a mesma turma em outro
+        ano letivo, antes de escolher o colega.
+      </>,
     ],
   },
   {
-    titulo: "2. As posições do futsal",
+    titulo: "As posições do futsal",
+    icone: Users,
     paragrafos: [
-      "Seu time tem 5 posições fixas: Goleiro, Fixo, dois Alas e Pivô. A cada rodada você escolhe qual posição em aberto vai preencher com o colega sorteado.",
-      "Depois de escalado, um colega nunca pode ser removido do time — você só pode trocar sua posição com outro colega já escalado (por exemplo, trocar um Ala de posição com o Pivô), nunca substituí-lo por outro jogador.",
+      <>
+        Seu time tem <Num>5</Num> posições fixas: Goleiro, Fixo, dois Alas e
+        Pivô. Cada colega só pode ocupar a posição em que ele joga, então a
+        sala sorteada precisa ter alguém pra vaga que você quer preencher.
+      </>,
+      <>
+        A formação escolhida antes do sorteio — Diamante (1-2-1), Quadrado
+        (2-2), Pinha (3-1) ou Sem pivô (4-0) — muda como o time se comporta
+        em campo, e o estilo (defensivo, equilibrado ou ofensivo) muda o
+        quanto ele arrisca.
+      </>,
+      <>
+        Você pode trocar a posição de dois colegas já escalados entre si
+        (por exemplo, trocar um Ala de posição com o Pivô) em &quot;Meu
+        Time&quot;.
+      </>,
     ],
   },
   {
-    titulo: "3. Completando o time",
+    titulo: "A partida: 90 minutos em 2 tempos",
+    icone: Clock,
     paragrafos: [
-      "O draft termina quando as 5 posições estiverem preenchidas. A partir daí, seu time fica salvo em \"Meu Time\" e pronto para entrar em campo.",
+      <>
+        Cada jogo simula uma partida completa de futsal: dois tempos de{" "}
+        <Num>45</Num> minutos, com faltas, cartões amarelo e vermelho, e
+        limite de <Num>5</Num> faltas por tempo — a partir da <Num>6ª</Num>,
+        o time adversário ganha uma cobrança direta com chance de gol bem
+        maior.
+      </>,
+      <>
+        Ao final, cada jogador recebe uma nota de desempenho e o melhor
+        jogador da partida é destacado.
+      </>,
     ],
   },
   {
-    titulo: "4. Desafios: amigos e bots",
+    titulo: "Contra o computador ou contra amigos",
+    icone: Swords,
     paragrafos: [
-      "Com o time completo, você pode desafiar um amigo (que também precisa ter um time completo) ou um bot em uma de três dificuldades.",
-      "Ao aceitar um desafio, a partida é simulada com base nos atributos dos 5 titulares de cada time. O resultado já sai definido, mas é revelado aos poucos: você assiste ao placar e aos eventos (gols, defesas, faltas) rolando em tempo real, como se estivesse acompanhando o jogo ao vivo — e se for contra um amigo, os dois assistem sincronizados ao mesmo tempo.",
+      <>
+        Com o time formado, você já pode jogar contra o computador sem
+        precisar de conta: o adversário é sempre uma turma real da escola,
+        sorteada na hora e escalada só com alunos dela.
+      </>,
+      <>
+        Pra desafiar um amigo é preciso ter uma conta. A partida é simulada
+        com base nos atributos dos <Num>5</Num> titulares de cada time; o
+        resultado já sai definido, mas é revelado aos poucos, com opção de
+        acelerar a velocidade ou pular direto pro resultado.
+      </>,
     ],
   },
 ];
@@ -31,17 +92,37 @@ const SECOES = [
 export default function ComoJogarPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight">Como Jogar</h1>
-      <div className="mt-8 flex flex-col gap-8">
-        {SECOES.map((secao) => (
-          <section key={secao.titulo}>
-            <h2 className="text-xl font-semibold">{secao.titulo}</h2>
-            <div className="mt-2 flex flex-col gap-2 text-muted-foreground">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Como Jogar
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Do sorteio da primeira sala ao apito final, é assim que uma
+          partida de Uni Draft acontece.
+        </p>
+      </div>
+
+      <div className="mt-10 flex flex-col gap-5">
+        {SECOES.map((secao, index) => (
+          <Card key={secao.titulo}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
+                  {index + 1}
+                </span>
+                <secao.icone
+                  className="size-4.5 shrink-0 text-primary"
+                  aria-hidden="true"
+                />
+                <CardTitle className="text-lg">{secao.titulo}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2 text-muted-foreground">
               {secao.paragrafos.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
-            </div>
-          </section>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

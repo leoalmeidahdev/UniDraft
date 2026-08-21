@@ -46,75 +46,121 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Tokens próprios do Uni Draft. A identidade é azul-marinho (--primary);
+   * estes são os detalhes que quebram o monocromático: números/notas em
+   * dourado, quadra em verde, estados de tática/resultado. Sempre usar via
+   * classe utilitária (text-destaque, bg-quadra, ...), nunca hex solto. */
+  --color-destaque: var(--destaque);
+  --color-destaque-foreground: var(--destaque-foreground);
+  --color-sucesso: var(--sucesso);
+  --color-sucesso-foreground: var(--sucesso-foreground);
+  --color-alerta: var(--alerta);
+  --color-alerta-foreground: var(--alerta-foreground);
+  --color-quadra: var(--quadra);
+  --color-quadra-linha: var(--quadra-linha);
+  --color-marinho: var(--marinho);
+  --color-marinho-claro: var(--marinho-claro);
 }
 
+/* Paleta clara: fundo levemente azulado (não branco puro) pra o marinho
+ * assentar, texto em marinho bem escuro em vez de preto neutro. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.985 0.004 250);
+  --foreground: oklch(0.21 0.035 258);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.21 0.035 258);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --popover-foreground: oklch(0.21 0.035 258);
+  --primary: oklch(0.33 0.095 260);
+  --primary-foreground: oklch(0.985 0.005 250);
+  --secondary: oklch(0.955 0.012 250);
+  --secondary-foreground: oklch(0.33 0.095 260);
+  --muted: oklch(0.955 0.012 250);
+  --muted-foreground: oklch(0.52 0.03 255);
+  --accent: oklch(0.93 0.03 252);
+  --accent-foreground: oklch(0.28 0.08 260);
+  --destructive: oklch(0.577 0.225 27.325);
+  --border: oklch(0.9 0.014 250);
+  --input: oklch(0.9 0.014 250);
+  --ring: oklch(0.55 0.11 260);
+
+  --destaque: oklch(0.72 0.145 72);
+  --destaque-foreground: oklch(0.24 0.06 68);
+  --sucesso: oklch(0.58 0.13 155);
+  --sucesso-foreground: oklch(0.985 0.005 250);
+  --alerta: oklch(0.72 0.16 62);
+  --alerta-foreground: oklch(0.24 0.06 62);
+  --quadra: oklch(0.42 0.075 168);
+  --quadra-linha: oklch(0.92 0.02 168 / 45%);
+  --marinho: oklch(0.28 0.085 260);
+  --marinho-claro: oklch(0.46 0.11 258);
+
+  /* Escala de barras de atributo: marinho -> azul claro (mesma família). */
+  --chart-1: oklch(0.28 0.085 260);
+  --chart-2: oklch(0.4 0.105 258);
+  --chart-3: oklch(0.52 0.115 254);
+  --chart-4: oklch(0.64 0.105 248);
+  --chart-5: oklch(0.76 0.075 244);
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.97 0.008 250);
+  --sidebar-foreground: oklch(0.21 0.035 258);
+  --sidebar-primary: oklch(0.33 0.095 260);
+  --sidebar-primary-foreground: oklch(0.985 0.005 250);
+  --sidebar-accent: oklch(0.93 0.03 252);
+  --sidebar-accent-foreground: oklch(0.28 0.08 260);
+  --sidebar-border: oklch(0.9 0.014 250);
+  --sidebar-ring: oklch(0.55 0.11 260);
 }
 
+/* Paleta escura: o fundo é o próprio marinho profundo; o primary inverte
+ * pra um azul claro legível, e o dourado sobe de luminosidade. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.175 0.032 258);
+  --foreground: oklch(0.965 0.008 250);
+  --card: oklch(0.225 0.038 258);
+  --card-foreground: oklch(0.965 0.008 250);
+  --popover: oklch(0.225 0.038 258);
+  --popover-foreground: oklch(0.965 0.008 250);
+  --primary: oklch(0.7 0.125 252);
+  --primary-foreground: oklch(0.17 0.04 260);
+  --secondary: oklch(0.29 0.04 258);
+  --secondary-foreground: oklch(0.965 0.008 250);
+  --muted: oklch(0.29 0.04 258);
+  --muted-foreground: oklch(0.7 0.03 252);
+  --accent: oklch(0.32 0.055 256);
+  --accent-foreground: oklch(0.965 0.008 250);
+  --destructive: oklch(0.68 0.185 22.216);
+  --border: oklch(0.98 0.02 250 / 12%);
+  --input: oklch(0.98 0.02 250 / 16%);
+  --ring: oklch(0.6 0.12 254);
+
+  --destaque: oklch(0.8 0.145 78);
+  --destaque-foreground: oklch(0.2 0.05 70);
+  --sucesso: oklch(0.72 0.145 158);
+  --sucesso-foreground: oklch(0.17 0.04 160);
+  --alerta: oklch(0.79 0.155 68);
+  --alerta-foreground: oklch(0.2 0.05 62);
+  --quadra: oklch(0.34 0.065 168);
+  --quadra-linha: oklch(0.9 0.02 168 / 35%);
+  --marinho: oklch(0.24 0.06 260);
+  --marinho-claro: oklch(0.58 0.12 254);
+
+  --chart-1: oklch(0.78 0.09 246);
+  --chart-2: oklch(0.68 0.115 250);
+  --chart-3: oklch(0.58 0.125 254);
+  --chart-4: oklch(0.47 0.115 258);
+  --chart-5: oklch(0.36 0.095 260);
+
+  --sidebar: oklch(0.225 0.038 258);
+  --sidebar-foreground: oklch(0.965 0.008 250);
+  --sidebar-primary: oklch(0.7 0.125 252);
+  --sidebar-primary-foreground: oklch(0.17 0.04 260);
+  --sidebar-accent: oklch(0.32 0.055 256);
+  --sidebar-accent-foreground: oklch(0.965 0.008 250);
+  --sidebar-border: oklch(0.98 0.02 250 / 12%);
+  --sidebar-ring: oklch(0.6 0.12 254);
 }
 
 @layer base {
@@ -126,5 +172,25 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  /* Todo número que o usuário compara (overall, placar, nota, minuto) usa
+   * esta classe: largura de dígito fixa, então a coluna não "dança" quando
+   * o valor muda durante o playback. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Fundo marinho das faixas de destaque (hero, placar). Sutil: o gradiente
+   * só escurece o marinho, não introduz outro matiz. */
+  .bg-marinho-gradiente {
+    background-image: linear-gradient(
+      160deg,
+      var(--marinho) 0%,
+      color-mix(in oklch, var(--marinho) 82%, black) 100%
+    );
   }
 }

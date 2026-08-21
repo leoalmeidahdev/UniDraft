@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { simulateMatch, type SquadSimulado } from "@/lib/simulation/simulateMatch";
-import type { PosicaoFutsal } from "@/types/domain";
+import { FORMACAO_PADRAO, ESTILO_PADRAO, type Formacao, type EstiloTatico, type PosicaoFutsal } from "@/types/domain";
 
-function criarSquad(id: string, overallBase: number): SquadSimulado {
+function criarSquad(
+  id: string,
+  overallBase: number,
+  tatica?: { formacao?: Formacao; estilo?: EstiloTatico }
+): SquadSimulado {
   const posicoes: PosicaoFutsal[] = ["GOLEIRO", "FIXO", "ALA_1", "ALA_2", "PIVO"];
   return {
     id,
@@ -19,6 +23,8 @@ function criarSquad(id: string, overallBase: number): SquadSimulado {
         goleiro: posicao === "GOLEIRO" ? overallBase : 20,
       },
     })),
+    formacao: tatica?.formacao,
+    estilo: tatica?.estilo,
   };
 }
 
@@ -91,5 +97,41 @@ describe("simulateMatch", () => {
     }
 
     expect(vitoriasForte).toBeGreaterThan(totalPartidas * 0.6);
+  });
+
+  it("tática padrão (FORMACAO_PADRAO + ESTILO_PADRAO) explícita dá o mesmo resultado que omitir a tática", () => {
+    const seed = 2024n;
+    const squadHomeImplicito = criarSquad("home", 60);
+    const squadAwayImplicito = criarSquad("away", 55);
+    const squadHomeExplicito = criarSquad("home", 60, { formacao: FORMACAO_PADRAO, estilo: ESTILO_PADRAO });
+    const squadAwayExplicito = criarSquad("away", 55, { formacao: FORMACAO_PADRAO, estilo: ESTILO_PADRAO });
+
+    const resultadoImplicito = simulateMatch({ squadHome: squadHomeImplicito, squadAway: squadAwayImplicito, seed });
+    const resultadoExplicito = simulateMatch({ squadHome: squadHomeExplicito, squadAway: squadAwayExplicito, seed });
+
+    expect(resultadoExplicito.placarHome).toBe(resultadoImplicito.placarHome);
+    expect(resultadoExplicito.placarAway).toBe(resultadoImplicito.placarAway);
+    expect(resultadoExplicito.eventos).toEqual(resultadoImplicito.eventos);
+  });
+
+  it("estilo ofensivo produz mais gols esperados que estilo defensivo, com o mesmo elenco", () => {
+    const totalPartidas = 40;
+    let golsOfensivo = 0;
+    let golsDefensivo = 0;
+
+    for (let i = 0; i < totalPartidas; i++) {
+      const seed = BigInt(i + 1);
+      const squadOfensivo = criarSquad("time", 60, { estilo: "ofensivo" });
+      const squadDefensivo = criarSquad("time", 60, { estilo: "defensivo" });
+      const adversario = criarSquad("adversario", 60);
+
+      const resultadoOfensivo = simulateMatch({ squadHome: squadOfensivo, squadAway: adversario, seed });
+      const resultadoDefensivo = simulateMatch({ squadHome: squadDefensivo, squadAway: adversario, seed });
+
+      golsOfensivo += resultadoOfensivo.placarHome;
+      golsDefensivo += resultadoDefensivo.placarHome;
+    }
+
+    expect(golsOfensivo).toBeGreaterThan(golsDefensivo);
   });
 });
