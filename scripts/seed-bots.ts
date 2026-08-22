@@ -24,8 +24,7 @@
  *
  * Uso: npm run seed:bots
  */
-import { config } from "dotenv";
-config({ path: [".env.local", ".env"] });
+import "./load-env";
 import { randomUUID } from "node:crypto";
 import { and, eq, like, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
