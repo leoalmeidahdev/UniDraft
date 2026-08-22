@@ -1,5 +1,8 @@
 "use client";
 
+import { AlunoListRow } from "./AlunoListRow";
+import { FutsalCourt, type CourtSlot } from "@/components/squad/FutsalCourt";
+
 import {
   useState,
   useTransition,
@@ -107,6 +110,12 @@ export function MontagemStep({
 
   const vagasAbertas = ORDEM_POSICOES.filter((slot) => !escolhas[slot]);
   const completo = vagasAbertas.length === 0;
+  const courtSlots: CourtSlot[] = ORDEM_POSICOES.map((slot) => ({
+    posicao: slot,
+    aluno: escolhas[slot]
+      ? { nome: escolhas[slot]!.nome, apelido: escolhas[slot]!.apelido, overall: escolhas[slot]!.overall }
+      : null,
+  }));
   const alunosEscaladosIds = new Set(Object.values(escolhas).map((e) => e!.alunoId));
   const rerollsRestantes = MAX_REROLLS - rerolls;
   const rerollsLabel =
@@ -265,22 +274,13 @@ export function MontagemStep({
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={rolar}
-                  disabled={isPending || (!!sala.turma && rerollsRestantes <= 0)}
-                >
+                <Button type="button" size="sm" onClick={rolar}
+                  disabled={isPending || (!!sala.turma && rerollsRestantes <= 0)}>
                   <Shuffle aria-hidden="true" />
                   {sala.turma ? "Outra sala" : "Rolar"}
                 </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={outraSerie}
-                  disabled={isPending || !sala.turma || rerollsRestantes <= 0}
-                >
+                <Button type="button" size="sm" variant="outline" onClick={outraSerie}
+                  disabled={isPending || !sala.turma || rerollsRestantes <= 0}>
                   <GraduationCap aria-hidden="true" />
                   Outra série
                 </Button>
@@ -292,38 +292,36 @@ export function MontagemStep({
             <p className="text-xs text-muted-foreground">
               Outra série troca a série mantendo a letra da sala — 2º J vira 1º J ou 3º J.
             </p>
-
             {sala.error && (
-              <Alert variant="destructive">
-                <AlertDescription>{sala.error}</AlertDescription>
-              </Alert>
+              <Alert variant="destructive"><AlertDescription>{sala.error}</AlertDescription></Alert>
             )}
 
-            {isPending ? (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-36 w-full rounded-xl" />
-                ))}
+            {/* Lista à esquerda, quadra à direita — como no 7a0 */}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,280px)_1fr]">
+              <div className="flex max-h-[420px] flex-col gap-1.5 overflow-y-auto pr-1 lg:max-h-none">
+                {isPending ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-9 w-full rounded-lg" />
+                  ))
+                ) : sala.alunos && sala.alunos.length > 0 ? (
+                  sala.alunos.map((aluno) => (
+                    <AlunoListRow
+                      key={aluno.id}
+                      aluno={aluno}
+                      podeEscalar={SLOTS_POR_POSICAO_JOGADOR[aluno.posicao].some((s) => !escolhas[s])}
+                      jaEscalado={alunosEscaladosIds.has(aluno.id)}
+                      onEscalar={() => escalar(aluno)}
+                    />
+                  ))
+                ) : sala.turma ? (
+                  <p className="text-sm text-muted-foreground">
+                    Essa sala não tem alunos com posição cadastrada. Role outra.
+                  </p>
+                ) : null}
               </div>
-            ) : sala.alunos && sala.alunos.length > 0 ? (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {sala.alunos.map((aluno) => (
-                  <AlunoCard
-                    key={aluno.id}
-                    aluno={aluno}
-                    slotsAbertosCompativeis={SLOTS_POR_POSICAO_JOGADOR[aluno.posicao].filter(
-                      (s) => !escolhas[s]
-                    )}
-                    jaEscalado={alunosEscaladosIds.has(aluno.id)}
-                    onEscalar={() => escalar(aluno)}
-                  />
-                ))}
-              </div>
-            ) : sala.turma ? (
-              <p className="text-sm text-muted-foreground">
-                Essa sala não tem alunos com posição cadastrada. Role outra.
-              </p>
-            ) : null}
+
+              <FutsalCourt slots={courtSlots} formacao={formacao} />
+            </div>
           </CardContent>
         </Card>
       )}
