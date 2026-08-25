@@ -89,6 +89,8 @@ export default async function PartidaPage({
     },
     placarFinalHome: match.placarHome,
     placarFinalAway: match.placarAway,
+    placarPenaltiHome: match.placarPenaltiHome,
+    placarPenaltiAway: match.placarPenaltiAway,
     eventos: match.events.map((e) => ({
       ordem: e.ordem,
       minutoJogo: e.minutoJogo,

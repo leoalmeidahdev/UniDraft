@@ -1,13 +1,16 @@
 import {
   CircleDot,
   Crosshair,
+  Dices,
   Flag,
+  Goal,
   Hand,
   Pause,
   Play,
   RectangleVertical,
   Square,
   TrendingDown,
+  X,
   type LucideIcon,
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
@@ -26,7 +29,12 @@ const ESTILO_TIPO: Record<TipoEventoPartida, { Icone: LucideIcon; cor: string }>
   inicio_tempo: { Icone: Play, cor: "text-muted-foreground" },
   fim_tempo: { Icone: Square, cor: "text-muted-foreground" },
   intervalo: { Icone: Pause, cor: "text-muted-foreground" },
+  disputa_penaltis: { Icone: Dices, cor: "text-muted-foreground" },
+  penalti_convertido: { Icone: Goal, cor: "text-destaque" },
+  penalti_perdido: { Icone: X, cor: "text-destructive" },
 };
+
+const TIPOS_PENALTI: TipoEventoPartida[] = ["penalti_convertido", "penalti_perdido"];
 
 export interface EventoTimeline {
   ordem: number;
@@ -56,13 +64,14 @@ export function EventTimeline({
             key={e.ordem}
             className={cn(
               "flex items-center gap-3 rounded-lg border bg-card px-3 py-2 text-sm",
-              e.tipo === "gol" && "border-destaque/45 bg-destaque/5 font-medium",
+              (e.tipo === "gol" || e.tipo === "penalti_convertido") &&
+                "border-destaque/45 bg-destaque/5 font-medium",
               isNeutro && "justify-center border-dashed bg-transparent text-muted-foreground"
             )}
           >
             {!isNeutro && (
               <span className="num w-8 shrink-0 text-xs text-muted-foreground">
-                {e.minutoJogo}&apos;
+                {TIPOS_PENALTI.includes(e.tipo) ? "pên" : `${e.minutoJogo}'`}
               </span>
             )}
             <Icone className={cn("size-4 shrink-0", cor)} aria-hidden />

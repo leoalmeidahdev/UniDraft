@@ -82,7 +82,42 @@ describe("simulateMatch", () => {
       );
       expect(resultado.eventos[i].ordem).toBe(i + 1);
     }
-    expect(resultado.eventos.at(-1)?.offsetPlaybackMs).toBeLessThanOrEqual(90_000);
+    expect(resultado.eventos.at(-1)?.offsetPlaybackMs).toBeLessThanOrEqual(
+      resultado.duracaoPlaybackSeg * 1000
+    );
+  });
+
+  it("empate no tempo normal vai pra disputa de pênaltis e decide um vencedor", () => {
+    const squadHome = criarSquad("home", 60);
+    const squadAway = criarSquad("away", 60);
+
+    let encontrouEmpate = false;
+    for (let seed = 1; seed <= 200 && !encontrouEmpate; seed++) {
+      const resultado = simulateMatch({ squadHome, squadAway, seed: BigInt(seed) });
+      if (resultado.placarHome !== resultado.placarAway) continue;
+      encontrouEmpate = true;
+
+      expect(resultado.placarPenaltiHome).not.toBeNull();
+      expect(resultado.placarPenaltiAway).not.toBeNull();
+      expect(resultado.placarPenaltiHome).not.toBe(resultado.placarPenaltiAway);
+      expect(resultado.duracaoPlaybackSeg).toBeGreaterThan(90);
+      expect(resultado.eventos.some((e) => e.tipo === "disputa_penaltis")).toBe(true);
+      expect(
+        resultado.eventos.some((e) => e.tipo === "penalti_convertido" || e.tipo === "penalti_perdido")
+      ).toBe(true);
+    }
+    expect(encontrouEmpate).toBe(true);
+  });
+
+  it("partida decidida no tempo normal não tem disputa de pênaltis", () => {
+    const squadForte = criarSquad("forte", 90);
+    const squadFraco = criarSquad("fraco", 20);
+    const resultado = simulateMatch({ squadHome: squadForte, squadAway: squadFraco, seed: 7n });
+
+    if (resultado.placarHome === resultado.placarAway) return;
+    expect(resultado.placarPenaltiHome).toBeNull();
+    expect(resultado.placarPenaltiAway).toBeNull();
+    expect(resultado.duracaoPlaybackSeg).toBe(90);
   });
 
   it("um time muito mais forte tende a vencer mais partidas em várias seeds", () => {

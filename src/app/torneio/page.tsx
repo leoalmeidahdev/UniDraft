@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requirePlayerIdentity } from "@/lib/auth/guards";
 import { getSquadByIdentity } from "@/lib/db/queries/squads";
@@ -26,9 +27,17 @@ export default async function TorneioPage() {
           <CardTitle className="text-2xl">Criar torneio</CardTitle>
         </CardHeader>
         <CardContent>
+          <p className="mb-1 text-sm text-muted-foreground">
+            Escolha o tamanho do mata-mata. As vagas restantes são preenchidas com times de
+            turma sorteados na hora — convide um amigo com o código da sala pra jogar junto
+            no mesmo chaveamento.
+          </p>
           <p className="mb-6 text-sm text-muted-foreground">
-            Escolha o tamanho do mata-mata. As vagas restantes são preenchidas com CPUs —
-            convide um amigo com o código da sala pra jogar junto no mesmo chaveamento.
+            Vai jogar com <span className="font-medium text-foreground">{squad.nome}</span>.{" "}
+            <Link href="/jogar" className="text-primary underline underline-offset-2">
+              Sortear um time novo
+            </Link>{" "}
+            antes de criar o torneio, se quiser trocar.
           </p>
           <CriarTorneioForm />
         </CardContent>

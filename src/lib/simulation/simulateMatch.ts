@@ -32,6 +32,10 @@ const CHANCE_CARTAO_NA_FALTA = 0.15;
 /** Probabilidade de conversão de uma falta direta em gol. */
 const XG_FALTA_DIRETA = 0.6;
 
+/** Disputa de pênaltis (Item: empate no tempo normal). */
+const CHANCE_BASE_PENALTI = 0.78;
+const PLAYBACK_SEG_POR_PENALTI = 2.5;
+
 export interface JogadorSimulado extends JogadorAtributos {
   id: string;
   nome: string;
@@ -59,6 +63,12 @@ export interface EventoSimulado {
 export interface ResultadoSimulacao {
   placarHome: number;
   placarAway: number;
+  /** Só vem preenchido quando o tempo normal termina empatado. */
+  placarPenaltiHome: number | null;
+  placarPenaltiAway: number | null;
+  /** Duração total de playback em segundos, já somando a disputa de pênaltis (se houve) —
+   * usar este valor pra gravar em matches.duracaoPlaybackSeg, não o parâmetro de entrada. */
+  duracaoPlaybackSeg: number;
   eventos: EventoSimulado[];
 }
 
@@ -90,6 +100,12 @@ function descricaoEvento(
       return "Apito final!";
     case "intervalo":
       return "Fim de primeiro tempo. Intervalo!";
+    case "disputa_penaltis":
+      return "Empate no tempo normal! Vai para a disputa de pênaltis.";
+    case "penalti_convertido":
+      return `${jogadorNome} converte a cobrança!`;
+    case "penalti_perdido":
+      return `${jogadorNome} perde a cobrança!`;
   }
 }
 
@@ -347,6 +363,120 @@ function gerarDecorativosDoTempo(
   }
 }
 
+/** Chance de conversão de uma cobrança, ajustada pela força ofensiva do cobrador e,
+ * quando o goleiro adversário segue ativo, pelo atributo goleiro dele. */
+function chanceConversaoPenalti(
+  cobrador: JogadorSimulado,
+  goleiroAdversario: JogadorSimulado | null
+): number {
+  const ajusteCobrador = (forcaOfensivaJogador(cobrador) - 50) / 500;
+  const ajusteGoleiro = goleiroAdversario ? -(goleiroAdversario.goleiro - 50) / 400 : 0;
+  return clamp(CHANCE_BASE_PENALTI + ajusteCobrador + ajusteGoleiro, 0.5, 0.95);
+}
+
+/** Cobradores disponíveis pra disputa: titulares ativos, de preferência de linha
+ * (goleiro só cobra se não sobrar mais ninguém — expulsões deixaram o time muito curto). */
+function cobradoresDisponiveis(
+  squad: SquadSimulado,
+  expulsos: Map<string, number>
+): Titular<JogadorSimulado>[] {
+  const ativos = titularesAtivos(squad, expulsos, DURACAO_JOGO_MIN);
+  const semGoleiro = ativos.filter((t) => t.posicao !== "GOLEIRO");
+  return semGoleiro.length > 0 ? semGoleiro : ativos;
+}
+
+function goleiroAtivo(
+  squad: SquadSimulado,
+  expulsos: Map<string, number>
+): Titular<JogadorSimulado> | null {
+  return (
+    titularesAtivos(squad, expulsos, DURACAO_JOGO_MIN).find((t) => t.posicao === "GOLEIRO") ?? null
+  );
+}
+
+/**
+ * Disputa de pênaltis: 5 rodadas alternadas (interrompidas cedo se o resultado já não
+ * pode mais mudar, como na regra oficial) e, se ainda empatado, morte súbita aos pares.
+ * Roda só quando o tempo normal termina empatado — o placar dela não conta como gol
+ * pra nenhum outro fim (ratings, xG etc.), só decide o vencedor da partida.
+ */
+function gerarDisputaPenaltis(
+  rng: Rng,
+  squadHome: SquadSimulado,
+  squadAway: SquadSimulado,
+  expulsos: Map<string, number>,
+  ordemInicial: number,
+  offsetInicialMs: number
+): { placarHome: number; placarAway: number; eventos: EventoSimulado[]; duracaoPlaybackSegExtra: number } {
+  const eventos: EventoSimulado[] = [];
+  let ordem = ordemInicial;
+  let offsetMs = offsetInicialMs;
+
+  function empurrar(bruto: EventoBruto) {
+    ordem += 1;
+    offsetMs += PLAYBACK_SEG_POR_PENALTI * 1000;
+    eventos.push({ ...bruto, ordem, offsetPlaybackMs: Math.round(offsetMs) });
+  }
+
+  empurrar({
+    minutoJogo: DURACAO_JOGO_MIN,
+    tipo: "disputa_penaltis",
+    squadId: null,
+    alunoId: null,
+    descricao: descricaoEvento("disputa_penaltis"),
+  });
+
+  const cobradoresHome = cobradoresDisponiveis(squadHome, expulsos);
+  const cobradoresAway = cobradoresDisponiveis(squadAway, expulsos);
+  const goleiroHome = goleiroAtivo(squadHome, expulsos);
+  const goleiroAway = goleiroAtivo(squadAway, expulsos);
+
+  let placarHome = 0;
+  let placarAway = 0;
+
+  function cobrar(
+    squadId: string,
+    cobrador: Titular<JogadorSimulado>,
+    goleiroAdversario: Titular<JogadorSimulado> | null
+  ): boolean {
+    const converteu = rng() < chanceConversaoPenalti(cobrador.jogador, goleiroAdversario?.jogador ?? null);
+    empurrar({
+      minutoJogo: DURACAO_JOGO_MIN,
+      tipo: converteu ? "penalti_convertido" : "penalti_perdido",
+      squadId,
+      alunoId: cobrador.jogador.id,
+      descricao: descricaoEvento(converteu ? "penalti_convertido" : "penalti_perdido", cobrador.jogador.nome),
+    });
+    return converteu;
+  }
+
+  for (let rodada = 1; rodada <= 5; rodada++) {
+    if (cobrar(squadHome.id, cobradoresHome[(rodada - 1) % cobradoresHome.length], goleiroAway)) {
+      placarHome++;
+    }
+    // Decisão antecipada: visitante não alcança mais mesmo convertendo tudo que resta.
+    if (placarHome > placarAway + (5 - rodada)) break;
+
+    if (cobrar(squadAway.id, cobradoresAway[(rodada - 1) % cobradoresAway.length], goleiroHome)) {
+      placarAway++;
+    }
+    // Decisão antecipada: casa não alcança mais mesmo convertendo tudo que resta.
+    if (placarAway > placarHome + (5 - rodada)) break;
+  }
+
+  for (let rodada = 5; placarHome === placarAway; rodada++) {
+    if (cobrar(squadHome.id, cobradoresHome[rodada % cobradoresHome.length], goleiroAway)) placarHome++;
+    if (cobrar(squadAway.id, cobradoresAway[rodada % cobradoresAway.length], goleiroHome)) placarAway++;
+  }
+
+  return {
+    placarHome,
+    placarAway,
+    eventos,
+    duracaoPlaybackSegExtra: (offsetMs - offsetInicialMs) / 1000,
+  };
+}
+
 /**
  * Simula uma partida de futsal 5x5 de forma determinística (mesma seed = mesmo resultado).
  * Roda inteira no servidor de uma vez; o resultado é reproduzido depois no client via
@@ -406,15 +536,40 @@ export function simulateMatch(params: {
 
   eventosBrutos.sort((a, b) => a.minutoJogo - b.minutoJogo);
 
-  const eventos: EventoSimulado[] = eventosBrutos.map((e, index) => ({
+  let eventos: EventoSimulado[] = eventosBrutos.map((e, index) => ({
     ...e,
     ordem: index + 1,
     offsetPlaybackMs: Math.round((e.minutoJogo / DURACAO_JOGO_MIN) * duracaoPlaybackSeg * 1000),
   }));
 
+  const placarHome = eventos.filter((e) => e.tipo === "gol" && e.squadId === squadHome.id).length;
+  const placarAway = eventos.filter((e) => e.tipo === "gol" && e.squadId === squadAway.id).length;
+
+  let placarPenaltiHome: number | null = null;
+  let placarPenaltiAway: number | null = null;
+  let duracaoPlaybackSegTotal = duracaoPlaybackSeg;
+
+  if (placarHome === placarAway) {
+    const disputa = gerarDisputaPenaltis(
+      rng,
+      squadHome,
+      squadAway,
+      expulsos,
+      eventos.length,
+      duracaoPlaybackSeg * 1000
+    );
+    eventos = eventos.concat(disputa.eventos);
+    placarPenaltiHome = disputa.placarHome;
+    placarPenaltiAway = disputa.placarAway;
+    duracaoPlaybackSegTotal = duracaoPlaybackSeg + disputa.duracaoPlaybackSegExtra;
+  }
+
   return {
-    placarHome: eventos.filter((e) => e.tipo === "gol" && e.squadId === squadHome.id).length,
-    placarAway: eventos.filter((e) => e.tipo === "gol" && e.squadId === squadAway.id).length,
+    placarHome,
+    placarAway,
+    placarPenaltiHome,
+    placarPenaltiAway,
+    duracaoPlaybackSeg: duracaoPlaybackSegTotal,
     eventos,
   };
 }

@@ -76,18 +76,22 @@ export async function criarChavesIniciais(
   await tx.insert(tournamentMatches).values(linhas);
 }
 
-/** Empate decidido deterministicamente a partir da seed da partida (equivalente a pênaltis). */
+/** Empate no tempo normal é decidido pela disputa de pênaltis já simulada e gravada
+ * junto com a partida (ver gerarDisputaPenaltis em simulateMatch.ts). */
 function decidirVencedorEntry(params: {
   entryHomeId: string;
   entryAwayId: string;
   placarHome: number;
   placarAway: number;
-  seed: bigint;
+  placarPenaltiHome: number | null;
+  placarPenaltiAway: number | null;
 }): string {
   if (params.placarHome !== params.placarAway) {
     return params.placarHome > params.placarAway ? params.entryHomeId : params.entryAwayId;
   }
-  return params.seed % 2n === 0n ? params.entryHomeId : params.entryAwayId;
+  return (params.placarPenaltiHome ?? 0) > (params.placarPenaltiAway ?? 0)
+    ? params.entryHomeId
+    : params.entryAwayId;
 }
 
 /** Simula a partida de uma chave e resolve o vencedor. Idempotente sob corrida (dois cliques simultâneos). */
@@ -103,7 +107,12 @@ export async function resolverPartidaChave(
   });
 
   const [match] = await db
-    .select({ placarHome: matches.placarHome, placarAway: matches.placarAway, seed: matches.seed })
+    .select({
+      placarHome: matches.placarHome,
+      placarAway: matches.placarAway,
+      placarPenaltiHome: matches.placarPenaltiHome,
+      placarPenaltiAway: matches.placarPenaltiAway,
+    })
     .from(matches)
     .where(eq(matches.id, matchId))
     .limit(1);
@@ -113,7 +122,8 @@ export async function resolverPartidaChave(
     entryAwayId: entryAway.id,
     placarHome: match.placarHome,
     placarAway: match.placarAway,
-    seed: match.seed,
+    placarPenaltiHome: match.placarPenaltiHome,
+    placarPenaltiAway: match.placarPenaltiAway,
   });
 
   const [atualizada] = await db

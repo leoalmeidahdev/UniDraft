@@ -36,6 +36,7 @@ export {
   Dices,
   Flag,
   Gauge,
+  Goal,
   GraduationCap,
   Hand,
   Info,

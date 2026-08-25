@@ -61,7 +61,10 @@ export type TipoEventoPartida =
   | "inicio_tempo"
   | "fim_tempo"
   | "intervalo"
-  | "chance_perdida";
+  | "chance_perdida"
+  | "disputa_penaltis"
+  | "penalti_convertido"
+  | "penalti_perdido";
 
 // ==========================================================
 // TÁTICA: FORMAÇÃO E ESTILO

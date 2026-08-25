@@ -19,6 +19,8 @@ export interface MatchPlaybackData {
   squadAway: { id: string; nome: string; ownerNome: string };
   placarFinalHome: number;
   placarFinalAway: number;
+  placarPenaltiHome: number | null;
+  placarPenaltiAway: number | null;
   eventos: EventoPlayback[];
 }
 
@@ -77,6 +79,9 @@ export function MatchPlaybackController({
     Math.floor((elapsedClamped / duracaoMs) * DURACAO_JOGO_MIN)
   );
 
+  const offsetFimTempo = data.eventos.find((e) => e.tipo === "fim_tempo")?.offsetPlaybackMs ?? duracaoMs;
+  const emPenaltis = !finalizado && elapsedClamped >= offsetFimTempo;
+
   return (
     <div className="flex flex-col gap-6">
       <LiveScoreboard
@@ -84,8 +89,11 @@ export function MatchPlaybackController({
         squadAway={data.squadAway}
         placarHome={placarHome}
         placarAway={placarAway}
+        placarPenaltiHome={data.placarPenaltiHome}
+        placarPenaltiAway={data.placarPenaltiAway}
         minutoAtual={minutoAtual}
         finalizado={finalizado}
+        emPenaltis={emPenaltis}
       />
       {!finalizado && <PlaybackSpeedControl speed={speed} onSpeedChange={handleSpeedChange} />}
       <div className="flex flex-col gap-3">

@@ -28,6 +28,7 @@ export function EntrarLobbyForm() {
           <AlertDescription>{state.error}</AlertDescription>
         </Alert>
       )}
+      <Input name="nome" placeholder="Nome do seu time nessa sala (opcional)" maxLength={40} />
       <div className="flex gap-2">
         <Input
           name="codigo"

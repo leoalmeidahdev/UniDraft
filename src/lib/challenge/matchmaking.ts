@@ -69,8 +69,7 @@ export async function simularEPersistirPartida(params: {
   ]);
 
   const seed = BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER));
-  const duracaoPlaybackSeg = 90;
-  const resultado = simulateMatch({ squadHome, squadAway, seed, duracaoPlaybackSeg });
+  const resultado = simulateMatch({ squadHome, squadAway, seed, duracaoPlaybackSeg: 90 });
   const iniciadaEm = new Date();
 
   return db.transaction(async (tx) => {
@@ -85,7 +84,9 @@ export async function simularEPersistirPartida(params: {
         seed,
         placarHome: resultado.placarHome,
         placarAway: resultado.placarAway,
-        duracaoPlaybackSeg,
+        placarPenaltiHome: resultado.placarPenaltiHome,
+        placarPenaltiAway: resultado.placarPenaltiAway,
+        duracaoPlaybackSeg: Math.round(resultado.duracaoPlaybackSeg),
         iniciadaEm,
       })
       .returning({ id: matches.id });

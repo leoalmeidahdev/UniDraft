@@ -272,23 +272,29 @@ export function MontagemStep({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" size="sm" onClick={rolar}
-                  disabled={isPending || (!!sala.turma && rerollsRestantes <= 0)}>
-                  <Shuffle aria-hidden="true" />
-                  {sala.turma ? "Outra sala" : "Rolar"}
-                </Button>
-                <Button type="button" size="sm" variant="outline" onClick={outraSerie}
-                  disabled={isPending || !sala.turma || rerollsRestantes <= 0}>
-                  <GraduationCap aria-hidden="true" />
-                  Outra série
-                </Button>
+            {!sala.turma ? (
+              <Button type="button" size="lg" className="w-full" onClick={rolar} disabled={isPending}>
+                <Shuffle aria-hidden="true" />
+                Rolar
+              </Button>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" onClick={rolar} disabled={isPending || rerollsRestantes <= 0}>
+                    <Shuffle aria-hidden="true" />
+                    Outra sala
+                  </Button>
+                  <Button type="button" size="sm" variant="outline" onClick={outraSerie}
+                    disabled={isPending || rerollsRestantes <= 0}>
+                    <GraduationCap aria-hidden="true" />
+                    Outra série
+                  </Button>
+                </div>
+                <Badge variant={rerollsRestantes <= 0 ? "secondary" : "outline"} className="num shrink-0">
+                  {rerollsLabel}
+                </Badge>
               </div>
-              <Badge variant={rerollsRestantes <= 0 ? "secondary" : "outline"} className="num shrink-0">
-                {rerollsLabel}
-              </Badge>
-            </div>
+            )}
             <p className="text-xs text-muted-foreground">
               Outra série troca a série mantendo a letra da sala — 2º J vira 1º J ou 3º J.
             </p>

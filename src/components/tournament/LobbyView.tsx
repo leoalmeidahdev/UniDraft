@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { iniciarTorneioAction } from "@/lib/tournament/actions";
+import { IniciarTorneioForm } from "@/components/tournament/IniciarTorneioForm";
 
 interface ParticipanteVM {
   id: string;
@@ -37,7 +36,9 @@ export function LobbyView({
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium">Jogadores ({participantes.length}/2)</p>
+          <p className="mb-2 text-sm font-medium">
+            Jogadores ({participantes.length}/{bracketSize})
+          </p>
           <ul className="flex flex-col gap-2">
             {participantes.map((p) => (
               <li key={p.id} className="flex items-center gap-2 rounded-lg border p-3">
@@ -54,12 +55,7 @@ export function LobbyView({
         </p>
 
         {souHost ? (
-          <form action={iniciarTorneioAction}>
-            <input type="hidden" name="tournamentId" value={tournamentId} />
-            <Button type="submit" size="lg">
-              Começar torneio
-            </Button>
-          </form>
+          <IniciarTorneioForm tournamentId={tournamentId} />
         ) : (
           <p className="text-sm text-muted-foreground">Aguardando o anfitrião começar o torneio...</p>
         )}

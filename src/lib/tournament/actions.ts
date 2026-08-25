@@ -59,6 +59,19 @@ async function gerarCodigoUnico(): Promise<string> {
   throw new Error("Não foi possível gerar um código de sala. Tente novamente.");
 }
 
+const TAMANHOS_VALIDOS = [8, 16, 32] as const;
+
+function parseBracketSize(formData: FormData): number {
+  const valor = Number(formData.get("bracketSize"));
+  return (TAMANHOS_VALIDOS as readonly number[]).includes(valor) ? valor : 8;
+}
+
+/** Nome que o dono escolheu pra sua entry na sala — null cai no squads.nome (ver torneio/[id]/page.tsx). */
+function parseNomeExibicao(formData: FormData): string | null {
+  const nome = String(formData.get("nome") ?? "").trim().slice(0, 40);
+  return nome || null;
+}
+
 export async function criarTorneioAction(
   _prevState: TournamentActionState,
   formData: FormData
@@ -73,7 +86,8 @@ export async function criarTorneioAction(
     return { error: "Complete seu time no draft antes de entrar num torneio." };
   }
 
-  const bracketSize = Number(formData.get("bracketSize")) === 16 ? 16 : 8;
+  const bracketSize = parseBracketSize(formData);
+  const nomeExibicao = parseNomeExibicao(formData);
   const lobbyCode = await gerarCodigoUnico();
 
   const tournamentId = await db.transaction(async (tx) => {
@@ -87,6 +101,7 @@ export async function criarTorneioAction(
       squadId: squad.id,
       ...camposDono(identity),
       isBot: false,
+      nomeExibicao,
     });
 
     return tournament.id;
@@ -121,7 +136,7 @@ export async function entrarLobbyTorneioAction(
     .select({ id: tournamentEntries.id })
     .from(tournamentEntries)
     .where(and(eq(tournamentEntries.tournamentId, tournament.id), eq(tournamentEntries.isBot, false)));
-  if (humanos.length >= 2) {
+  if (humanos.length >= tournament.bracketSize) {
     return { error: "Essa sala já está cheia." };
   }
 
@@ -130,32 +145,40 @@ export async function entrarLobbyTorneioAction(
     squadId: squad.id,
     ...camposDono(identity),
     isBot: false,
+    nomeExibicao: parseNomeExibicao(formData),
   });
 
   redirect(`/torneio/${tournament.id}`);
 }
 
 /** Só o host pode começar; enche as vagas restantes com bots e monta o chaveamento inteiro. */
-export async function iniciarTorneioAction(formData: FormData): Promise<void> {
+export async function iniciarTorneioAction(
+  _prevState: TournamentActionState,
+  formData: FormData
+): Promise<TournamentActionState> {
   const identity = await requirePlayerIdentity();
   const tournamentId = String(formData.get("tournamentId") ?? "");
-  if (!tournamentId) return;
+  if (!tournamentId) return { error: "Torneio inválido." };
 
   const tournament = await getTournamentFull(tournamentId);
-  if (!tournament || tournament.status !== "lobby") return;
+  if (!tournament || tournament.status !== "lobby") return { error: "Esse torneio não está mais na sala de espera." };
 
   const souHost =
     identity.kind === "user"
       ? tournament.hostUserId === identity.id
       : tournament.hostGuestId === identity.id;
-  if (!souHost) return;
+  if (!souHost) return { error: "Só o anfitrião pode começar o torneio." };
 
   const humanos = tournament.entries.filter((e) => !e.isBot);
   const vagasRestantes = tournament.bracketSize - humanos.length;
-  if (vagasRestantes < 0) return;
+  if (vagasRestantes < 0) return { error: "Tem gente demais na sala pra esse tamanho de chaveamento." };
 
   const botPoolCompleto = await getBotSquadPool();
-  if (botPoolCompleto.length < vagasRestantes) return;
+  if (botPoolCompleto.length < vagasRestantes) {
+    return {
+      error: `Faltam times de turma pra completar o chaveamento (${botPoolCompleto.length} disponíveis, ${vagasRestantes} necessários). Escolha um chaveamento menor ou chame mais amigos.`,
+    };
+  }
 
   const botsEscolhidos = [...botPoolCompleto].sort(() => Math.random() - 0.5).slice(0, vagasRestantes);
 
@@ -242,4 +265,33 @@ export async function jogarPartidaTorneioAction(formData: FormData): Promise<voi
   if (chaveAtual?.matchId) {
     redirect(`/partida/${chaveAtual.matchId}`);
   }
+}
+
+/** Só o host cancela — some da lista de "torneio ativo" de todo mundo (ver
+ * getActiveTournamentForIdentity) sem apagar entries/chaves já jogadas. */
+export async function cancelarTorneioAction(
+  _prevState: TournamentActionState,
+  formData: FormData
+): Promise<TournamentActionState> {
+  const identity = await requirePlayerIdentity();
+  const tournamentId = String(formData.get("tournamentId") ?? "");
+  if (!tournamentId) return { error: "Torneio inválido." };
+
+  const tournament = await getTournamentFull(tournamentId);
+  if (!tournament) return { error: "Torneio não encontrado." };
+
+  const souHost =
+    identity.kind === "user"
+      ? tournament.hostUserId === identity.id
+      : tournament.hostGuestId === identity.id;
+  if (!souHost) return { error: "Só o anfitrião pode cancelar o torneio." };
+
+  if (tournament.status === "finalizado") return { error: "Esse torneio já terminou." };
+
+  await db
+    .update(tournaments)
+    .set({ status: "finalizado", finalizadoEm: new Date() })
+    .where(eq(tournaments.id, tournamentId));
+
+  redirect("/torneio");
 }

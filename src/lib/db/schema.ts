@@ -63,6 +63,9 @@ export const tipoEventoPartida = pgEnum("tipo_evento_partida", [
   "fim_tempo",
   "intervalo",
   "chance_perdida",
+  "disputa_penaltis",
+  "penalti_convertido",
+  "penalti_perdido",
 ]);
 export const statusTorneio = pgEnum("status_torneio", [
   "lobby",
@@ -288,6 +291,10 @@ export const matches = pgTable("matches", {
   seed: bigint("seed", { mode: "bigint" }).notNull(),
   placarHome: smallint("placar_home").notNull().default(0),
   placarAway: smallint("placar_away").notNull().default(0),
+  /** Só preenchido quando o tempo normal termina empatado — ver disputa de pênaltis
+   * em src/lib/simulation/simulateMatch.ts. */
+  placarPenaltiHome: smallint("placar_penalti_home"),
+  placarPenaltiAway: smallint("placar_penalti_away"),
   duracaoPlaybackSeg: integer("duracao_playback_seg").notNull().default(90),
   iniciadaEm: timestamp("iniciada_em", { withTimezone: true }),
   finalizadaEm: timestamp("finalizada_em", { withTimezone: true }),
@@ -358,7 +365,7 @@ export const tournaments = pgTable(
     ),
     check(
       "tournaments_bracket_size",
-      sql`${table.bracketSize} in (8, 16)`
+      sql`${table.bracketSize} in (8, 16, 32)`
     ),
   ]
 );
@@ -378,6 +385,10 @@ export const tournamentEntries = pgTable(
     }),
     ownerGuestId: text("owner_guest_id"),
     isBot: boolean("is_bot").notNull().default(false),
+    // Nome que aparece na sala/chaveamento pra essa entry. Opcional — cada
+    // dono escolhe o dele ao criar/entrar na sala; sem isso cai no
+    // squads.nome (geralmente "Meu Time" pra todo mundo, ver torneio/[id]/page.tsx).
+    nomeExibicao: text("nome_exibicao"),
     // null até o torneio começar (gerarPareamento define os slots de uma vez).
     slot: smallint("slot"),
     createdAt: timestamp("created_at", { withTimezone: true })
