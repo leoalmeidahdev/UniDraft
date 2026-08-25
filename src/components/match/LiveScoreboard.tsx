@@ -29,7 +29,9 @@ export function LiveScoreboard({
   squadAway: { nome: string; ownerNome: string };
   placarHome: number;
   placarAway: number;
-  /** Só exibido quando o tempo normal termina empatado e a disputa já foi revelada. */
+  /** Contagem de cobranças convertidas já reveladas pelo playback — só vem preenchido
+   * quando o tempo normal terminou empatado (mesmo antes de `finalizado`, atualiza cobrança
+   * a cobrança durante `emPenaltis`). */
   placarPenaltiHome?: number | null;
   placarPenaltiAway?: number | null;
   minutoAtual: number;
@@ -37,7 +39,8 @@ export function LiveScoreboard({
   /** Playback já passou do fim do tempo normal numa partida que foi pra pênaltis. */
   emPenaltis?: boolean;
 }) {
-  const mostrarPenaltis = finalizado && placarPenaltiHome != null && placarPenaltiAway != null;
+  const mostrarPenaltis =
+    (emPenaltis || finalizado) && placarPenaltiHome != null && placarPenaltiAway != null;
   const minutoExibido = Math.min(minutoAtual, DURACAO_JOGO_MIN);
 
   return (

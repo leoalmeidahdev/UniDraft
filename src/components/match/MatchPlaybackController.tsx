@@ -82,6 +82,16 @@ export function MatchPlaybackController({
   const offsetFimTempo = data.eventos.find((e) => e.tipo === "fim_tempo")?.offsetPlaybackMs ?? duracaoMs;
   const emPenaltis = !finalizado && elapsedClamped >= offsetFimTempo;
 
+  // Conta as cobranças convertidas já reveladas em vez de usar direto data.placarPenaltiHome/Away —
+  // assim o mini placar sobe cobrança a cobrança durante emPenaltis em vez de aparecer só no fim.
+  const houvePenaltis = data.placarPenaltiHome != null;
+  const placarPenaltiHome = houvePenaltis
+    ? eventosRevelados.filter((e) => e.tipo === "penalti_convertido" && e.squadId === data.squadHome.id).length
+    : null;
+  const placarPenaltiAway = houvePenaltis
+    ? eventosRevelados.filter((e) => e.tipo === "penalti_convertido" && e.squadId === data.squadAway.id).length
+    : null;
+
   return (
     <div className="flex flex-col gap-6">
       <LiveScoreboard
@@ -89,8 +99,8 @@ export function MatchPlaybackController({
         squadAway={data.squadAway}
         placarHome={placarHome}
         placarAway={placarAway}
-        placarPenaltiHome={data.placarPenaltiHome}
-        placarPenaltiAway={data.placarPenaltiAway}
+        placarPenaltiHome={placarPenaltiHome}
+        placarPenaltiAway={placarPenaltiAway}
         minutoAtual={minutoAtual}
         finalizado={finalizado}
         emPenaltis={emPenaltis}
