@@ -6,11 +6,36 @@
 - Local:         http://localhost:3000
 - Network:       http://26.217.234.254:3000
 - Environments: .env.local
-✓ Ready in 5.4s
-✓ Running next.config.ts took 318ms
+✓ Ready in 5.5s
+✓ Running next.config.ts took 312ms
 
- GET /jogar 200 in 3.3s (next.js: 2.1s, proxy.ts: 623ms, application-code: 542ms)
- GET / 200 in 275ms (next.js: 60ms, proxy.ts: 17ms, application-code: 198ms)
+⨯ Error: Failed query: select "tournament_entries"."tournament_id" from "tournament_entries" inner join "tournaments" on "tournaments"."id" = "tournament_entries"."tournament_id" where ("tournament_entries"."owner_guest_id" = $1 and "tournaments"."status" <> $2) limit $3
+params: 5ad3e4fd-2f09-42d2-9f0a-59562a0f2fc6,finalizado,1
+    at async getActiveTournamentForIdentity (src\lib\db\queries\tournaments.ts:14:19)
+    at async TorneioPage (src\app\torneio\page.tsx:13:17)
+  12 | /** Torneio não-finalizado em que a identidade já tem uma entry, se houver. */
+  13 | export async function getActiveTournamentForIdentity(owner: SquadOwnerRef) {
+> 14 |   const [entry] = await db
+     |                   ^
+  15 |     .select({ tournamentId: tournamentEntries.tournamentId })
+  16 |     .from(tournamentEntries)
+  17 |     .innerJoin(tournaments, eq(tournaments.id, tournamentEntries.tournamentId)) {
+  query: 'select "tournament_entries"."tournament_id" from "tournament_entries" inner join "tournaments" on "tournaments"."id" = "tournament_entries"."tournament_id" where ("tournament_entries"."owner_guest_id" = $1 and "tournaments"."status" <> $2) limit $3',
+  params: [ '5ad3e4fd-2f09-42d2-9f0a-59562a0f2fc6', 'finalizado', 1 ],
+  digest: '2853993706',
+  [cause]: Error [PostgresError]: relation "tournament_entries" does not exist
+      at ignore-listed frames {
+    severity_local: 'ERROR',
+    severity: 'ERROR',
+    code: '42P01',
+    position: '50',
+    file: 'parse_relation.c',
+    line: '1449',
+    routine: 'parserOpenTable'
+  }
+}
+ GET /torneio 500 in 3.4s (next.js: 1976ms, proxy.ts: 600ms, application-code: 855ms)
+ GET / 200 in 299ms (next.js: 84ms, proxy.ts: 21ms, application-code: 195ms)
 [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
 - A server/client branch `if (typeof window !== 'undefined')`.
@@ -52,7 +77,7 @@ https://react.dev/link/hydration-mismatch
                         <html lang="pt-BR" className="geist_a715...">
                           <body
                             className="min-h-full flex flex-col bg-background text-foreground"
--                           __processed_5cf45b9f-e337-41d4-889e-df9bdd512ccd__="true"
+-                           __processed_edf6c5cb-ff16-4ef0-879d-f5152293d7de__="true"
 -                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
                           >
                             <Navbar>
@@ -384,32 +409,17 @@ https://react.dev/link/hydration-mismatch
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
     at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?59:1195:263)
     at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?50:569:280) 
- GET /jogar 200 in 54ms (next.js: 12ms, proxy.ts: 9ms, application-code: 33ms)
- POST /jogar 200 in 432ms (next.js: 8ms, proxy.ts: 7ms, application-code: 418ms)
-  └─ ƒ sortearSalaAction({}, {}) in 384ms src/lib/squad/actions.ts
- POST /jogar 200 in 135ms (next.js: 10ms, proxy.ts: 11ms, application-code: 114ms)
-  └─ ƒ sortearSalaAction({}, {}) in 101ms src/lib/squad/actions.ts
- POST /jogar 200 in 138ms (next.js: 8ms, proxy.ts: 8ms, application-code: 121ms)
-  └─ ƒ sortearSalaAction({}, {}) in 109ms src/lib/squad/actions.ts
- POST /jogar 200 in 137ms (next.js: 11ms, proxy.ts: 6ms, application-code: 120ms)
-  └─ ƒ sortearSalaAction({}, {}) in 103ms src/lib/squad/actions.ts
- POST /jogar 200 in 127ms (next.js: 10ms, proxy.ts: 9ms, application-code: 108ms)
-  └─ ƒ sortearSalaAction({}, {}) in 95ms src/lib/squad/actions.ts
- GET /partida/2e9ab7ed-e780-4376-86e4-0a3542f62854 200 in 1300ms (next.js: 1166ms, proxy.ts: 6ms, application-code: 128ms)
- POST /jogar 200 in 1971ms (next.js: 9ms, proxy.ts: 6ms, application-code: 1956ms)
-  └─ ƒ finalizarDraftAction({}, {}) in 636ms src/lib/squad/actions.ts
- GET /torneio 200 in 193ms (next.js: 44ms, proxy.ts: 8ms, application-code: 141ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 1184ms (next.js: 1040ms, proxy.ts: 7ms, application-code: 137ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 153ms (next.js: 17ms, proxy.ts: 7ms, application-code: 129ms)
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?59:1195:263)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?149:274:333)
-    at Array.map (<anonymous>:1:18)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?141:246:113)
-    at Array.map (<anonymous>:1:18)
-    at BracketView (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?142:235:27)
-    at TorneioDetailPage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?139:136:264) 
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 277ms (next.js: 21ms, proxy.ts: 7ms, application-code: 248ms)
+ GET /jogar 200 in 117ms (next.js: 65ms, proxy.ts: 18ms, application-code: 34ms)
+ GET /jogar 200 in 41ms (next.js: 10ms, proxy.ts: 6ms, application-code: 25ms)
+ GET /jogar 200 in 41ms (next.js: 11ms, proxy.ts: 7ms, application-code: 23ms)
+ GET / 200 in 52ms (next.js: 9ms, proxy.ts: 5ms, application-code: 38ms)
+ GET /jogar 200 in 52ms (next.js: 10ms, proxy.ts: 8ms, application-code: 35ms)
+ POST /jogar 200 in 110ms (next.js: 10ms, proxy.ts: 9ms, application-code: 91ms)
+  └─ ƒ sortearSalaAction({}, {}) in 56ms src/lib/squad/actions.ts
+ POST /jogar 200 in 96ms (next.js: 11ms, proxy.ts: 9ms, application-code: 77ms)
+  └─ ƒ sortearSalaAction({}, {}) in 58ms src/lib/squad/actions.ts
+ GET /torneio 307 in 229ms (next.js: 12ms, proxy.ts: 7ms, application-code: 211ms)
+ GET /jogar 200 in 146ms (next.js: 9ms, proxy.ts: 7ms, application-code: 130ms)
 [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
 - A server/client branch `if (typeof window !== 'undefined')`.
@@ -428,7 +438,7 @@ https://react.dev/link/hydration-mismatch
         <ReplaySsrOnlyErrors>
         <DevRootHTTPAccessFallbackBoundary>
           <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
-            <HTTPAccessFallbackErrorBoundary pathname="/torneio/e..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+            <HTTPAccessFallbackErrorBoundary pathname="/jogar" notFound={<NotAllowedRootHTTPFallbackError>} ...>
               <RedirectBoundary>
                 <RedirectErrorBoundary router={{...}}>
                   <Head headCacheNode={{rsc:{...}, ...}}>
@@ -451,7 +461,7 @@ https://react.dev/link/hydration-mismatch
                         <html lang="pt-BR" className="geist_a715...">
                           <body
                             className="min-h-full flex flex-col bg-background text-foreground"
--                           __processed_3f00cd60-7464-4e02-9e2b-038cd1b32a2d__="true"
+-                           __processed_44580370-3188-42d7-a4af-747e47ba2153__="true"
 -                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
                           >
                             <Navbar>
@@ -474,230 +484,443 @@ https://react.dev/link/hydration-mismatch
                                     >
                                     ...
                             ...
-                              <SegmentViewNode type="page" pagePath="torneio/[i...">
+                              <SegmentViewNode type="page" pagePath="jogar/page...">
                                 <SegmentTrieNode>
-                                <TorneioDetailPage>
-                                  <div
-                                    className="mx-auto w-full max-w-4xl px-4 py-12"
--                                   bis_skin_checked="1"
-                                  >
-                                    <TournamentRealtimeListener>
-                                    <h1>
-                                    <BracketView>
+                                <JogarPage>
+                                  <JogarWizard>
+                                    <div
+                                      className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-10"
+-                                     bis_skin_checked="1"
+                                    >
                                       <div
-                                        className="flex gap-6 overflow-x-auto pb-4"
+                                        className="mb-6"
 -                                       bis_skin_checked="1"
                                       >
+                                      <ol>
+                                      <TaticaStep formacao="1-2-1" estilo="equilibrado" ...>
                                         <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
+                                          className="flex flex-col gap-8"
 -                                         bis_skin_checked="1"
                                         >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
+                                          <section>
+                                            <h2>
+                                            <p>
                                             <div
-                                              className="border-t"
+                                              role="radiogroup"
+                                              aria-label="Formação"
+                                              className="grid grid-cols-1 gap-3 sm:grid-cols-2"
 -                                             bis_skin_checked="1"
                                             >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
+                                              <button type="button" role="radio" aria-checked={true} ...>
+                                                <TaticaDiagram formacao="1-2-1" className="w-20 shrin...">
+                                                  <div
+                                                    aria-hidden="true"
+                                                    className="relative aspect-[3/4] overflow-hidden rounded-lg border..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="absolute inset-2 rounded-md border border-quadra-linh..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 ..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1rem)] -t..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-2 h-6 w-14 -translate-x-1/2 rou..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"92%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       GOL
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"74%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       FIX
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"46%",left:"18%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"46%",left:"82%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"14%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       PIV
+                                                <div
+                                                  className="min-w-0"
+-                                                 bis_skin_checked="1"
+                                                >
+                                                  <div
+                                                    className="flex flex-wrap items-center gap-1.5"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                  ...
+                                              <button type="button" role="radio" aria-checked={false} ...>
+                                                <TaticaDiagram formacao="2-2" className="w-20 shrin...">
+                                                  <div
+                                                    aria-hidden="true"
+                                                    className="relative aspect-[3/4] overflow-hidden rounded-lg border..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="absolute inset-2 rounded-md border border-quadra-linh..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 ..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1rem)] -t..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-2 h-6 w-14 -translate-x-1/2 rou..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"92%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       GOL
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"66%",left:"30%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       FIX
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"66%",left:"70%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"24%",left:"30%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"24%",left:"70%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       PIV
+                                                <div
+                                                  className="min-w-0"
+-                                                 bis_skin_checked="1"
+                                                >
+                                                  <div
+                                                    className="flex flex-wrap items-center gap-1.5"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                  ...
+                                              <button type="button" role="radio" aria-checked={false} ...>
+                                                <TaticaDiagram formacao="3-1" className="w-20 shrin...">
+                                                  <div
+                                                    aria-hidden="true"
+                                                    className="relative aspect-[3/4] overflow-hidden rounded-lg border..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="absolute inset-2 rounded-md border border-quadra-linh..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 ..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1rem)] -t..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-2 h-6 w-14 -translate-x-1/2 rou..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"92%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       GOL
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"64%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       FIX
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"58%",left:"22%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"58%",left:"78%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"12%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       PIV
+                                                <div
+                                                  className="min-w-0"
+-                                                 bis_skin_checked="1"
+                                                >
+                                                  <div
+                                                    className="flex flex-wrap items-center gap-1.5"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                  ...
+                                              <button type="button" role="radio" aria-checked={false} ...>
+                                                <TaticaDiagram formacao="4-0" className="w-20 shrin...">
+                                                  <div
+                                                    aria-hidden="true"
+                                                    className="relative aspect-[3/4] overflow-hidden rounded-lg border..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="absolute inset-2 rounded-md border border-quadra-linh..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 ..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1rem)] -t..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute left-1/2 top-2 h-6 w-14 -translate-x-1/2 rou..."
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"92%",left:"50%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       GOL
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"44%",left:"38%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       FIX
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"38%",left:"14%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"38%",left:"86%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       ALA
+                                                    <div
+                                                      className="absolute -translate-x-1/2 -translate-y-1/2"
+                                                      style={{top:"44%",left:"62%"}}
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <div
+                                                        className="flex h-6 w-6 items-center justify-center rounded-fu..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       PIV
+                                                <div
+                                                  className="min-w-0"
+-                                                 bis_skin_checked="1"
+                                                >
+                                                  <div
+                                                    className="flex flex-wrap items-center gap-1.5"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                  ...
+                                          <section>
+                                            <h2>
+                                            <p>
                                             <div
-                                              className="border-t"
+                                              role="radiogroup"
+                                              aria-label="Estilo"
+                                              className="grid grid-cols-1 gap-3 sm:grid-cols-3"
 -                                             bis_skin_checked="1"
                                             >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
                                           <div
-                                            className="overflow-hidden rounded-lg border"
+                                            className="flex justify-end"
 -                                           bis_skin_checked="1"
                                           >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                        <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
--                                         bis_skin_checked="1"
-                                        >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                        <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
--                                         bis_skin_checked="1"
-                                        >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="px-3 py-2 text-sm text-muted-foreground"
--                                               bis_skin_checked="1"
-                                              >
-+                                               A definir
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="px-3 py-2 text-sm text-muted-foreground"
--                                               bis_skin_checked="1"
-                                              >
-+                                               A definir
                               ...
                             ...
                   ...
  
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?10:913:284)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?29:1195:263)
+    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?14:913:284)
     at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?12:928:284)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?29:1195:263)
+    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?16:928:284)
     at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
+ POST /jogar 200 in 2.5s (next.js: 8ms, proxy.ts: 10ms, application-code: 2.5s)
+  └─ ƒ sortearSalaAction({}, {}) in 2481ms src/lib/squad/actions.ts
+ POST /jogar 200 in 2.4s (next.js: 10ms, proxy.ts: 9ms, application-code: 2.4s)
+  └─ ƒ sortearSalaAction({}, {}) in 2374ms src/lib/squad/actions.ts
+ GET / 200 in 59ms (next.js: 11ms, proxy.ts: 8ms, application-code: 40ms)
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?31:274:333)
-    at Array.map (<anonymous>:1:18)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?27:246:113)
-    at Array.map (<anonymous>:1:18)
-    at BracketView (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?28:235:27)
-    at TorneioDetailPage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?25:136:264) 
- GET /sobre 200 in 81ms (next.js: 44ms, proxy.ts: 6ms, application-code: 31ms)
- GET /como-jogar 200 in 77ms (next.js: 40ms, proxy.ts: 5ms, application-code: 33ms)
- GET /jogar 200 in 40ms (next.js: 7ms, proxy.ts: 6ms, application-code: 26ms)
- GET /meu-time 200 in 188ms (next.js: 47ms, proxy.ts: 5ms, application-code: 136ms)
- GET /meu-time 200 in 142ms (next.js: 7ms, proxy.ts: 5ms, application-code: 129ms)
- GET /torneio 200 in 136ms (next.js: 7ms, proxy.ts: 5ms, application-code: 124ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 149ms (next.js: 17ms, proxy.ts: 7ms, application-code: 124ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 114ms (next.js: 10ms, proxy.ts: 7ms, application-code: 97ms)
- GET /partida/e29e87b1-c95e-4a92-93ae-2103a8641467 200 in 176ms (next.js: 18ms, proxy.ts: 5ms, application-code: 152ms)
- POST /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 938ms (next.js: 18ms, proxy.ts: 5ms, application-code: 915ms)
-  └─ ƒ jogarPartidaTorneioAction({}) in 719ms src/lib/tournament/actions.ts
- GET /partida/e29e87b1-c95e-4a92-93ae-2103a8641467 200 in 153ms (next.js: 14ms, proxy.ts: 7ms, application-code: 132ms)
- GET /meu-time 200 in 162ms (next.js: 8ms, proxy.ts: 6ms, application-code: 148ms)
- GET /jogar 200 in 37ms (next.js: 7ms, proxy.ts: 5ms, application-code: 25ms)
- POST /jogar 200 in 218ms (next.js: 11ms, proxy.ts: 7ms, application-code: 200ms)
-  └─ ƒ sortearSalaAction({}, {}) in 185ms src/lib/squad/actions.ts
- POST /jogar 200 in 132ms (next.js: 10ms, proxy.ts: 9ms, application-code: 113ms)
-  └─ ƒ sortearSalaAction({}, {}) in 99ms src/lib/squad/actions.ts
- POST /jogar 200 in 136ms (next.js: 12ms, proxy.ts: 6ms, application-code: 118ms)
-  └─ ƒ sortearSalaAction({}, {}) in 104ms src/lib/squad/actions.ts
- POST /jogar 200 in 140ms (next.js: 15ms, proxy.ts: 9ms, application-code: 115ms)
-  └─ ƒ sortearSalaAction({}, {}) in 99ms src/lib/squad/actions.ts
- POST /jogar 200 in 137ms (next.js: 10ms, proxy.ts: 7ms, application-code: 120ms)
-  └─ ƒ sortearSalaAction({}, {}) in 105ms src/lib/squad/actions.ts
- GET /partida/72691acd-2143-41d7-b447-8e7cc3330313 200 in 200ms (next.js: 19ms, proxy.ts: 5ms, application-code: 176ms)
- POST /jogar 200 in 900ms (next.js: 10ms, proxy.ts: 5ms, application-code: 884ms)
-  └─ ƒ finalizarDraftAction({}, {}) in 666ms src/lib/squad/actions.ts
- GET / 200 in 53ms (next.js: 9ms, proxy.ts: 4ms, application-code: 39ms)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?29:1195:263)
+    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?48:182:292) 
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?211:182:292) 
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?29:1195:263)
+    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?51:225:292) 
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?214:225:292) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?244:569:280) 
- GET /torneio 200 in 178ms (next.js: 10ms, proxy.ts: 5ms, application-code: 163ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 194ms (next.js: 24ms, proxy.ts: 10ms, application-code: 160ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 164ms (next.js: 17ms, proxy.ts: 8ms, application-code: 140ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 245ms (next.js: 26ms, proxy.ts: 8ms, application-code: 212ms)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?29:1195:263)
+    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?85:569:280) 
+ GET /sobre 200 in 94ms (next.js: 50ms, proxy.ts: 5ms, application-code: 40ms)
+ GET /como-jogar 200 in 88ms (next.js: 42ms, proxy.ts: 5ms, application-code: 41ms)
+ GET /meu-time 200 in 125ms (next.js: 43ms, proxy.ts: 6ms, application-code: 76ms)
+ GET /torneio 200 in 129ms (next.js: 7ms, proxy.ts: 5ms, application-code: 117ms)
+ GET /meu-time 200 in 105ms (next.js: 8ms, proxy.ts: 7ms, application-code: 90ms)
+ GET /meu-time 200 in 256ms (next.js: 12ms, proxy.ts: 5ms, application-code: 239ms)
+ GET /meu-time 200 in 93ms (next.js: 8ms, proxy.ts: 5ms, application-code: 80ms)
+ POST /meu-time 200 in 2.9s (next.js: 8ms, proxy.ts: 6ms, application-code: 2.9s)
+  └─ ƒ iniciarRodadaAction({}, {}) in 2883ms src/lib/squad/actions.ts
+ GET /jogar 200 in 64ms (next.js: 36ms, proxy.ts: 6ms, application-code: 22ms)
+ POST /jogar 200 in 133ms (next.js: 7ms, proxy.ts: 7ms, application-code: 119ms)
+  └─ ƒ sortearSalaAction({}, {}) in 108ms src/lib/squad/actions.ts
+ POST /jogar 200 in 144ms (next.js: 9ms, proxy.ts: 6ms, application-code: 130ms)
+  └─ ƒ sortearSalaAction({}, {}) in 116ms src/lib/squad/actions.ts
+ POST /jogar 200 in 141ms (next.js: 9ms, proxy.ts: 7ms, application-code: 125ms)
+  └─ ƒ sortearSalaAction({}, {}) in 112ms src/lib/squad/actions.ts
+ POST /jogar 200 in 137ms (next.js: 12ms, proxy.ts: 8ms, application-code: 118ms)
+  └─ ƒ sortearSalaAction({}, {}) in 106ms src/lib/squad/actions.ts
+ POST /jogar 200 in 144ms (next.js: 11ms, proxy.ts: 8ms, application-code: 125ms)
+  └─ ƒ sortearSalaAction({}, {}) in 108ms src/lib/squad/actions.ts
+ GET /meu-time 200 in 167ms (next.js: 13ms, proxy.ts: 6ms, application-code: 149ms)
+ POST /jogar 200 in 488ms (next.js: 8ms, proxy.ts: 6ms, application-code: 475ms)
+  └─ ƒ finalizarDraftAction({}, {}) in 287ms src/lib/squad/actions.ts
+ GET /jogar 200 in 39ms (next.js: 8ms, proxy.ts: 5ms, application-code: 26ms)
+ POST /jogar 200 in 923ms (next.js: 9ms, proxy.ts: 8ms, application-code: 906ms)
+  └─ ƒ sortearSalaAction({}, {}) in 893ms src/lib/squad/actions.ts
+ POST /jogar 200 in 1159ms (next.js: 10ms, proxy.ts: 6ms, application-code: 1144ms)
+  └─ ƒ sortearSalaAction({}, {}) in 1133ms src/lib/squad/actions.ts
+ POST /jogar 200 in 360ms (next.js: 8ms, proxy.ts: 5ms, application-code: 347ms)
+  └─ ƒ sortearSalaAction({}, {}) in 334ms src/lib/squad/actions.ts
+ POST /jogar 200 in 127ms (next.js: 8ms, proxy.ts: 7ms, application-code: 112ms)
+  └─ ƒ sortearSalaAction({}, {}) in 100ms src/lib/squad/actions.ts
+ POST /jogar 200 in 126ms (next.js: 9ms, proxy.ts: 6ms, application-code: 111ms)
+  └─ ƒ sortearSalaAction({}, {}) in 100ms src/lib/squad/actions.ts
+ GET /meu-time 200 in 164ms (next.js: 7ms, proxy.ts: 5ms, application-code: 152ms)
+ POST /jogar 200 in 441ms (next.js: 9ms, proxy.ts: 5ms, application-code: 426ms)
+  └─ ƒ finalizarDraftAction({}, {}) in 249ms src/lib/squad/actions.ts
+ GET /meu-time 200 in 153ms (next.js: 8ms, proxy.ts: 5ms, application-code: 141ms)
+ POST /meu-time 200 in 562ms (next.js: 10ms, proxy.ts: 7ms, application-code: 545ms)
+  └─ ƒ novaRodadaAction({}, {}) in 376ms src/lib/squad/actions.ts
+ POST /meu-time 200 in 124ms (next.js: 9ms, proxy.ts: 8ms, application-code: 107ms)
+  └─ ƒ jogarContraBotAction({}, {}) in 94ms src/lib/match/actions.ts
+ GET /meu-time 200 in 287ms (next.js: 12ms, proxy.ts: 7ms, application-code: 268ms)
 [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
 - A server/client branch `if (typeof window !== 'undefined')`.
@@ -716,7 +939,7 @@ https://react.dev/link/hydration-mismatch
         <ReplaySsrOnlyErrors>
         <DevRootHTTPAccessFallbackBoundary>
           <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
-            <HTTPAccessFallbackErrorBoundary pathname="/torneio/e..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+            <HTTPAccessFallbackErrorBoundary pathname="/meu-time" notFound={<NotAllowedRootHTTPFallbackError>} ...>
               <RedirectBoundary>
                 <RedirectErrorBoundary router={{...}}>
                   <Head headCacheNode={{rsc:{...}, ...}}>
@@ -739,7 +962,7 @@ https://react.dev/link/hydration-mismatch
                         <html lang="pt-BR" className="geist_a715...">
                           <body
                             className="min-h-full flex flex-col bg-background text-foreground"
--                           __processed_13ee0142-731e-4ac8-b3f1-8cf91fe3492b__="true"
+-                           __processed_9572322d-fdcc-4b6f-9572-5615020265bc__="true"
 -                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
                           >
                             <Navbar>
@@ -762,526 +985,389 @@ https://react.dev/link/hydration-mismatch
                                     >
                                     ...
                             ...
-                              <SegmentViewNode type="page" pagePath="torneio/[i...">
+                              <SegmentViewNode type="page" pagePath="meu-time/p...">
                                 <SegmentTrieNode>
-                                <TorneioDetailPage>
+                                <MeuTimePage>
                                   <div
-                                    className="mx-auto w-full max-w-4xl px-4 py-12"
--                                   bis_skin_checked="1"
-                                  >
-                                    <TournamentRealtimeListener>
-                                    <h1>
-                                    <BracketView>
-                                      <div
-                                        className="flex gap-6 overflow-x-auto pb-4"
--                                       bis_skin_checked="1"
-                                      >
-                                        <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
--                                         bis_skin_checked="1"
-                                        >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                        <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
--                                         bis_skin_checked="1"
-                                        >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                        <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
--                                         bis_skin_checked="1"
-                                        >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                              ...
-                            ...
-                  ...
- 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?10:913:284)
-    at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?12:928:284)
-    at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?31:274:333)
-    at Array.map (<anonymous>:1:18)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?27:246:113)
-    at Array.map (<anonymous>:1:18)
-    at BracketView (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?28:235:27)
-    at TorneioDetailPage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?25:136:264) 
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 259ms (next.js: 21ms, proxy.ts: 8ms, application-code: 229ms)
-[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-https://react.dev/link/hydration-mismatch
-
-  ...
-    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
-      <AppDevOverlayErrorBoundary globalError={[...]}>
-        <ReplaySsrOnlyErrors>
-        <DevRootHTTPAccessFallbackBoundary>
-          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
-            <HTTPAccessFallbackErrorBoundary pathname="/torneio/e..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
-              <RedirectBoundary>
-                <RedirectErrorBoundary router={{...}}>
-                  <Head headCacheNode={{rsc:{...}, ...}}>
-                    <__next_viewport_boundary__>
-                    <MetadataWrapper>
-                      <div
-                        hidden={true}
--                       bis_skin_checked="1"
-                      >
-                    ...
-                  <__next_root_layout_boundary__>
-                    <SegmentViewNode type="layout" pagePath="layout.tsx">
-                      <SegmentTrieNode>
-                      <link>
-                      <script>
-                      <script>
-                      <script>
-                      <script>
-                      <RootLayout>
-                        <html lang="pt-BR" className="geist_a715...">
-                          <body
-                            className="min-h-full flex flex-col bg-background text-foreground"
--                           __processed_c972e465-c0b2-4add-8d5b-0fdb4b1196e3__="true"
--                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
-                          >
-                            <Navbar>
-                              <header className="sticky top...">
-                                <div
-                                  className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4"
--                                 bis_skin_checked="1"
-                                >
-                                  <div
-                                    className="flex items-center gap-6"
--                                   bis_skin_checked="1"
-                                  >
-                                  <div
-                                    className="flex items-center gap-2"
+                                    className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10"
 -                                   bis_skin_checked="1"
                                   >
                                     <div
-                                      className="hidden items-center gap-2 sm:flex"
+                                      className="bg-marinho-gradiente flex flex-col gap-3 rounded-2xl p-6 text-white"
 -                                     bis_skin_checked="1"
                                     >
-                                    ...
-                            ...
-                              <SegmentViewNode type="page" pagePath="torneio/[i...">
-                                <SegmentTrieNode>
-                                <TorneioDetailPage>
-                                  <div
-                                    className="mx-auto w-full max-w-4xl px-4 py-12"
--                                   bis_skin_checked="1"
-                                  >
-                                    <TournamentRealtimeListener>
-                                    <h1>
-                                    <BracketView>
                                       <div
-                                        className="flex gap-6 overflow-x-auto pb-4"
 -                                       bis_skin_checked="1"
                                       >
+                                      <div
+                                        className="flex flex-wrap gap-2"
+-                                       bis_skin_checked="1"
+                                      >
+                                    <SquadFormationView>
+                                      <div
+                                        className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_1fr] sm:items-start"
+-                                       bis_skin_checked="1"
+                                      >
+                                        <FutsalCourt>
+                                          <div
+                                            className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border ..."
+-                                           bis_skin_checked="1"
+                                          >
+                                            <div
+                                              className="absolute inset-3 rounded-md border-2 border-quadra-linha"
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -transla..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1.5rem)] -transla..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-3 h-14 w-32 -translate-x-1/2 rounded-b-..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute bottom-3 left-1/2 h-14 w-32 -translate-x-1/2 rounded..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"90%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               FO
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"66%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               MA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"40%",left:"18%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               PA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"40%",left:"82%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               DA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"14%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               PE
+                                              ...
                                         <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
+                                          className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-4 sm:p-6"
 -                                         bis_skin_checked="1"
                                         >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
+                                          <SlotCard squadId="add46681-4..." posicao="GOLEIRO" aluno={{nome:"Fofão", ...}} ...>
+                                            <Card>
                                               <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
 -                                               bis_skin_checked="1"
                                               >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Goleiro
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Fofão
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="FIXO" aluno={{nome:"Marq...", ...}} ...>
+                                            <Card>
                                               <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
 -                                               bis_skin_checked="1"
                                               >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Fixo
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Marquinhos
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="ALA_1" aluno={{nome:"Paixão", ...}} ...>
+                                            <Card>
                                               <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
 -                                               bis_skin_checked="1"
                                               >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Ala
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Paixão
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="ALA_2" aluno={{nome:"Daniel", ...}} ...>
+                                            <Card>
                                               <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
 -                                               bis_skin_checked="1"
                                               >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Ala
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Daniel
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="PIVO" aluno={{nome:"Pedro", ...}} ...>
+                                            <Card>
                                               <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
 -                                               bis_skin_checked="1"
                                               >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            <div
-                                              className="border-t"
--                                             bis_skin_checked="1"
-                                            >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Pivô
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Pedro
+                                                      ...
+                                                    ...
+                                    <div
+                                      className="grid gap-4 sm:grid-cols-2"
+-                                     bis_skin_checked="1"
+                                    >
+                                      <Card>
                                         <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
+                                          data-slot="card"
+                                          data-size="default"
+                                          className={"group/card flex flex-col gap-(--card-spacing) overflow-hidden r..."}
 -                                         bis_skin_checked="1"
                                         >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
+                                          <CardHeader>
                                             <div
-                                              className="border-t"
+                                              data-slot="card-header"
+                                              className="group/card-header @container/card-header grid auto-rows-min i..."
 -                                             bis_skin_checked="1"
                                             >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm f..."
--                                               bis_skin_checked="1"
-                                              >
+                                              <CardTitle>
+                                                <div
+                                                  data-slot="card-title"
+                                                  className="font-heading font-medium group-data-[size=sm]/card:text-s..."
+-                                                 bis_skin_checked="1"
+                                                >
+                                          <CardContent>
                                             <div
-                                              className="border-t"
+                                              data-slot="card-content"
+                                              className="px-(--card-spacing) flex flex-wrap items-center gap-2"
 -                                             bis_skin_checked="1"
                                             >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
+                                      <Card>
                                         <div
-                                          className="flex w-64 shrink-0 flex-col gap-4"
+                                          data-slot="card"
+                                          data-size="default"
+                                          className={"group/card flex flex-col gap-(--card-spacing) overflow-hidden r..."}
 -                                         bis_skin_checked="1"
                                         >
-                                          <h2>
-                                          <div
-                                            className="overflow-hidden rounded-lg border"
--                                           bis_skin_checked="1"
-                                          >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
+                                          <CardHeader>
                                             <div
-                                              className="border-t"
+                                              data-slot="card-header"
+                                              className="group/card-header @container/card-header grid auto-rows-min i..."
 -                                             bis_skin_checked="1"
                                             >
-                                            <LadoChave>
-                                              <div
-                                                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
--                                               bis_skin_checked="1"
-                                              >
-                                            ...
+                                              <CardTitle>
+                                                <div
+                                                  data-slot="card-title"
+                                                  className="font-heading font-medium group-data-[size=sm]/card:text-s..."
+-                                                 bis_skin_checked="1"
+                                                >
+                                          <CardContent>
+                                            <div
+                                              data-slot="card-content"
+                                              className="px-(--card-spacing) flex flex-col items-start gap-3"
+-                                             bis_skin_checked="1"
+                                            >
                               ...
                             ...
                   ...
  
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?53:1195:263)
     at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?10:913:284)
     at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
 [browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?53:1195:263)
     at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?12:928:284)
     at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?31:274:333)
-    at Array.map (<anonymous>:1:18)
-    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?27:246:113)
-    at Array.map (<anonymous>:1:18)
-    at BracketView (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?28:235:27)
-    at TorneioDetailPage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1lc6i8a._.js?25:136:264) 
- GET / 200 in 52ms (next.js: 8ms, proxy.ts: 5ms, application-code: 38ms)
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?75:182:292) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?78:225:292) 
-[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
-    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?42:1195:263)
-    at HomePage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1ehg4lx._.js?112:569:280) 
- GET /jogar 200 in 41ms (next.js: 9ms, proxy.ts: 5ms, application-code: 27ms)
- GET /torneio 200 in 153ms (next.js: 8ms, proxy.ts: 4ms, application-code: 140ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 178ms (next.js: 18ms, proxy.ts: 8ms, application-code: 153ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 178ms (next.js: 13ms, proxy.ts: 5ms, application-code: 160ms)
- GET /sobre 200 in 45ms (next.js: 11ms, proxy.ts: 6ms, application-code: 29ms)
- GET / 200 in 50ms (next.js: 8ms, proxy.ts: 5ms, application-code: 37ms)
- GET /torneio 200 in 147ms (next.js: 9ms, proxy.ts: 6ms, application-code: 133ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 205ms (next.js: 31ms, proxy.ts: 12ms, application-code: 162ms)
- GET /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 143ms (next.js: 19ms, proxy.ts: 9ms, application-code: 115ms)
- GET /partida/10668130-85e1-4799-ae47-b0d5a6d112b6 200 in 139ms (next.js: 18ms, proxy.ts: 6ms, application-code: 115ms)
- POST /torneio/e42289e9-c246-4629-bf1a-3d69c31809c5 200 in 762ms (next.js: 23ms, proxy.ts: 5ms, application-code: 734ms)
-  └─ ƒ jogarPartidaTorneioAction({}) in 578ms src/lib/tournament/actions.ts
- GET /torneio 200 in 158ms (next.js: 9ms, proxy.ts: 5ms, application-code: 143ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 113ms (next.js: 17ms, proxy.ts: 5ms, application-code: 91ms)
- POST /torneio 200 in 457ms (next.js: 7ms, proxy.ts: 6ms, application-code: 443ms)
-  └─ ƒ criarTorneioAction({}, {}) in 314ms src/lib/tournament/actions.ts
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 105ms (next.js: 13ms, proxy.ts: 6ms, application-code: 86ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 271ms (next.js: 17ms, proxy.ts: 5ms, application-code: 249ms)
- POST /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 2.1s (next.js: 17ms, proxy.ts: 5ms, application-code: 2.1s)
-  └─ ƒ iniciarTorneioAction({}) in 1812ms src/lib/tournament/actions.ts
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 273ms (next.js: 11ms, proxy.ts: 5ms, application-code: 258ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 445ms (next.js: 29ms, proxy.ts: 9ms, application-code: 407ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 368ms (next.js: 91ms, proxy.ts: 22ms, application-code: 255ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 372ms (next.js: 61ms, proxy.ts: 22ms, application-code: 288ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 360ms (next.js: 86ms, proxy.ts: 13ms, application-code: 261ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 229ms (next.js: 17ms, proxy.ts: 12ms, application-code: 200ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 219ms (next.js: 37ms, proxy.ts: 30ms, application-code: 152ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 623ms (next.js: 148ms, proxy.ts: 22ms, application-code: 454ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 241ms (next.js: 88ms, proxy.ts: 23ms, application-code: 131ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 638ms (next.js: 69ms, proxy.ts: 128ms, application-code: 441ms)
- GET /sobre 200 in 37ms (next.js: 9ms, proxy.ts: 5ms, application-code: 23ms)
- GET / 200 in 50ms (next.js: 8ms, proxy.ts: 4ms, application-code: 38ms)
- GET /torneio 200 in 138ms (next.js: 7ms, proxy.ts: 6ms, application-code: 124ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 143ms (next.js: 18ms, proxy.ts: 6ms, application-code: 118ms)
- GET /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 120ms (next.js: 10ms, proxy.ts: 6ms, application-code: 104ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 215ms (next.js: 16ms, proxy.ts: 5ms, application-code: 194ms)
- POST /torneio/c27e3bae-2b93-4d0b-8143-1b5f18a7791d 200 in 2.3s (next.js: 17ms, proxy.ts: 5ms, application-code: 2.3s)
-  └─ ƒ jogarPartidaTorneioAction({}) in 2077ms src/lib/tournament/actions.ts
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 167ms (next.js: 10ms, proxy.ts: 5ms, application-code: 153ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 297ms (next.js: 12ms, proxy.ts: 6ms, application-code: 279ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 350ms (next.js: 43ms, proxy.ts: 14ms, application-code: 293ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 366ms (next.js: 104ms, proxy.ts: 15ms, application-code: 248ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 367ms (next.js: 128ms, proxy.ts: 16ms, application-code: 223ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 353ms (next.js: 31ms, proxy.ts: 160ms, application-code: 162ms)
- GET /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 292ms (next.js: 70ms, proxy.ts: 105ms, application-code: 117ms)
- POST /torneio/[id] 200 in 93ms (next.js: 15ms, proxy.ts: 6ms, application-code: 72ms)
-  └─ ƒ jogarPartidaTorneioAction({}) in 57ms src/lib/tournament/actions.ts
- POST /partida/d81bec84-09bd-4f79-b52a-e1dddb08cab1 200 in 233ms (next.js: 66ms, proxy.ts: 57ms, application-code: 110ms)
- GET /torneio 200 in 174ms (next.js: 16ms, proxy.ts: 5ms, application-code: 153ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 108ms (next.js: 16ms, proxy.ts: 8ms, application-code: 84ms)
- POST /torneio 200 in 404ms (next.js: 8ms, proxy.ts: 5ms, application-code: 391ms)
-  └─ ƒ criarTorneioAction({}, {}) in 269ms src/lib/tournament/actions.ts
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 108ms (next.js: 10ms, proxy.ts: 6ms, application-code: 92ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 167ms (next.js: 18ms, proxy.ts: 7ms, application-code: 142ms)
- POST /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 2.1s (next.js: 21ms, proxy.ts: 6ms, application-code: 2.1s)
-  └─ ƒ iniciarTorneioAction({}) in 1813ms src/lib/tournament/actions.ts
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 206ms (next.js: 12ms, proxy.ts: 6ms, application-code: 188ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 414ms (next.js: 14ms, proxy.ts: 7ms, application-code: 392ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 427ms (next.js: 44ms, proxy.ts: 14ms, application-code: 369ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 479ms (next.js: 93ms, proxy.ts: 16ms, application-code: 370ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 481ms (next.js: 69ms, proxy.ts: 15ms, application-code: 398ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 496ms (next.js: 193ms, proxy.ts: 11ms, application-code: 292ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 334ms (next.js: 107ms, proxy.ts: 19ms, application-code: 207ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 242ms (next.js: 22ms, proxy.ts: 9ms, application-code: 210ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 184ms (next.js: 27ms, proxy.ts: 22ms, application-code: 136ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 183ms (next.js: 51ms, proxy.ts: 21ms, application-code: 110ms)
- GET /partida/994772a9-5b54-490d-86dd-3e707628fb0f 200 in 204ms (next.js: 16ms, proxy.ts: 8ms, application-code: 180ms)
- POST /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 1310ms (next.js: 17ms, proxy.ts: 6ms, application-code: 1287ms)
-  └─ ƒ jogarPartidaTorneioAction({}) in 1059ms src/lib/tournament/actions.ts
- GET /partida/994772a9-5b54-490d-86dd-3e707628fb0f 200 in 244ms (next.js: 11ms, proxy.ts: 5ms, application-code: 228ms)
- GET /partida/994772a9-5b54-490d-86dd-3e707628fb0f 200 in 191ms (next.js: 16ms, proxy.ts: 5ms, application-code: 170ms)
- GET /partida/994772a9-5b54-490d-86dd-3e707628fb0f 200 in 176ms (next.js: 62ms, proxy.ts: 11ms, application-code: 103ms)
- GET /partida/994772a9-5b54-490d-86dd-3e707628fb0f 200 in 182ms (next.js: 18ms, proxy.ts: 10ms, application-code: 154ms)
- GET /jogar 200 in 40ms (next.js: 8ms, proxy.ts: 5ms, application-code: 27ms)
- GET /torneio 200 in 154ms (next.js: 8ms, proxy.ts: 7ms, application-code: 139ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 158ms (next.js: 21ms, proxy.ts: 7ms, application-code: 130ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 129ms (next.js: 13ms, proxy.ts: 6ms, application-code: 109ms)
- GET / 200 in 51ms (next.js: 7ms, proxy.ts: 5ms, application-code: 39ms)
- GET /torneio 200 in 132ms (next.js: 7ms, proxy.ts: 5ms, application-code: 120ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 150ms (next.js: 18ms, proxy.ts: 8ms, application-code: 124ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 125ms (next.js: 13ms, proxy.ts: 7ms, application-code: 105ms)
- GET /torneio 200 in 151ms (next.js: 9ms, proxy.ts: 5ms, application-code: 137ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 163ms (next.js: 19ms, proxy.ts: 7ms, application-code: 138ms)
- GET /torneio/dc30193d-8484-417d-8fec-80e7a0ff916f 200 in 128ms (next.js: 11ms, proxy.ts: 6ms, application-code: 111ms)
+  Reload env: .env.local
+ GET /meu-time 200 in 843ms (next.js: 197ms, proxy.ts: 131ms, application-code: 515ms)
+ GET /jogar 200 in 317ms (next.js: 21ms, proxy.ts: 7ms, application-code: 289ms)
