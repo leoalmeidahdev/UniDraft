@@ -1371,3 +1371,560 @@ https://react.dev/link/hydration-mismatch
   Reload env: .env.local
  GET /meu-time 200 in 843ms (next.js: 197ms, proxy.ts: 131ms, application-code: 515ms)
  GET /jogar 200 in 317ms (next.js: 21ms, proxy.ts: 7ms, application-code: 289ms)
+ GET /meu-time 200 in 284ms (next.js: 11ms, proxy.ts: 9ms, application-code: 264ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/meu-time" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head headCacheNode={{rsc:{...}, ...}}>
+                    <__next_viewport_boundary__>
+                    <MetadataWrapper>
+                      <div
+                        hidden={true}
+-                       bis_skin_checked="1"
+                      >
+                    ...
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="pt-BR" className="geist_a715...">
+                          <body
+                            className="min-h-full flex flex-col bg-background text-foreground"
+-                           __processed_677e2bdf-fe8d-40b7-927f-cabf19a945bc__="true"
+-                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
+                          >
+                            <Navbar>
+                              <header className="sticky top...">
+                                <div
+                                  className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4"
+-                                 bis_skin_checked="1"
+                                >
+                                  <div
+                                    className="flex items-center gap-6"
+-                                   bis_skin_checked="1"
+                                  >
+                                  <div
+                                    className="flex items-center gap-2"
+-                                   bis_skin_checked="1"
+                                  >
+                                    <div
+                                      className="hidden items-center gap-2 sm:flex"
+-                                     bis_skin_checked="1"
+                                    >
+                                    ...
+                            ...
+                              <SegmentViewNode type="page" pagePath="meu-time/p...">
+                                <SegmentTrieNode>
+                                <MeuTimePage>
+                                  <div
+                                    className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10"
+-                                   bis_skin_checked="1"
+                                  >
+                                    <div
+                                      className="bg-marinho-gradiente flex flex-col gap-3 rounded-2xl p-6 text-white"
+-                                     bis_skin_checked="1"
+                                    >
+                                      <div
+-                                       bis_skin_checked="1"
+                                      >
+                                      <div
+                                        className="flex flex-wrap gap-2"
+-                                       bis_skin_checked="1"
+                                      >
+                                    <SquadFormationView>
+                                      <div
+                                        className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_1fr] sm:items-start"
+-                                       bis_skin_checked="1"
+                                      >
+                                        <FutsalCourt>
+                                          <div
+                                            className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border ..."
+-                                           bis_skin_checked="1"
+                                          >
+                                            <div
+                                              className="absolute inset-3 rounded-md border-2 border-quadra-linha"
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -transla..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-1/2 h-px w-[calc(100%-1.5rem)] -transla..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute left-1/2 top-3 h-14 w-32 -translate-x-1/2 rounded-b-..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute bottom-3 left-1/2 h-14 w-32 -translate-x-1/2 rounded..."
+-                                             bis_skin_checked="1"
+                                            >
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"90%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               FO
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"66%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               MA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"40%",left:"18%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               PA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"40%",left:"82%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               DA
+                                              ...
+                                            <div
+                                              className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col item..."
+                                              style={{top:"14%",left:"50%"}}
+-                                             bis_skin_checked="1"
+                                            >
+                                              <div
+                                                className="flex h-12 w-12 items-center justify-center rounded-full bor..."
+-                                               bis_skin_checked="1"
+                                              >
++                                               PE
+                                              ...
+                                        <div
+                                          className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-4 sm:p-6"
+-                                         bis_skin_checked="1"
+                                        >
+                                          <SlotCard squadId="add46681-4..." posicao="GOLEIRO" aluno={{nome:"Fofão", ...}} ...>
+                                            <Card>
+                                              <div
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
+-                                               bis_skin_checked="1"
+                                              >
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Goleiro
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Fofão
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="FIXO" aluno={{nome:"Marq...", ...}} ...>
+                                            <Card>
+                                              <div
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
+-                                               bis_skin_checked="1"
+                                              >
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Fixo
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Marquinhos
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="ALA_1" aluno={{nome:"Paixão", ...}} ...>
+                                            <Card>
+                                              <div
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
+-                                               bis_skin_checked="1"
+                                              >
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Ala
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Paixão
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="ALA_2" aluno={{nome:"Daniel", ...}} ...>
+                                            <Card>
+                                              <div
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
+-                                               bis_skin_checked="1"
+                                              >
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Ala
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Daniel
+                                                      ...
+                                                    ...
+                                          <SlotCard squadId="add46681-4..." posicao="PIVO" aluno={{nome:"Pedro", ...}} ...>
+                                            <Card>
+                                              <div
+                                                data-slot="card"
+                                                data-size="default"
+                                                className={"group/card flex flex-col gap-(--card-spacing) overflow-hi..."}
+-                                               bis_skin_checked="1"
+                                              >
+                                                <CardHeader className="pb-2">
+                                                  <div
+                                                    data-slot="card-header"
+                                                    className="group/card-header @container/card-header grid auto-rows..."
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <CardTitle className="text-sm fo...">
+                                                      <div
+                                                        data-slot="card-title"
+                                                        className="font-heading group-data-[size=sm]/card:text-sm text..."
+-                                                       bis_skin_checked="1"
+                                                      >
++                                                       Pivô
+                                                <CardContent className="flex flex-...">
+                                                  <div
+                                                    data-slot="card-content"
+                                                    className="px-(--card-spacing) flex flex-col gap-3"
+-                                                   bis_skin_checked="1"
+                                                  >
+                                                    <div
+                                                      className="flex items-center gap-3"
+-                                                     bis_skin_checked="1"
+                                                    >
+                                                      <Avatar>
+                                                      <div
+-                                                       bis_skin_checked="1"
+                                                      >
+                                                        <div
+                                                          className="font-semibold"
+-                                                         bis_skin_checked="1"
+                                                        >
++                                                         Pedro
+                                                      ...
+                                                    ...
+                                    <div
+                                      className="grid gap-4 sm:grid-cols-2"
+-                                     bis_skin_checked="1"
+                                    >
+                                      <Card>
+                                        <div
+                                          data-slot="card"
+                                          data-size="default"
+                                          className={"group/card flex flex-col gap-(--card-spacing) overflow-hidden r..."}
+-                                         bis_skin_checked="1"
+                                        >
+                                          <CardHeader>
+                                            <div
+                                              data-slot="card-header"
+                                              className="group/card-header @container/card-header grid auto-rows-min i..."
+-                                             bis_skin_checked="1"
+                                            >
+                                              <CardTitle>
+                                                <div
+                                                  data-slot="card-title"
+                                                  className="font-heading font-medium group-data-[size=sm]/card:text-s..."
+-                                                 bis_skin_checked="1"
+                                                >
+                                          <CardContent>
+                                            <div
+                                              data-slot="card-content"
+                                              className="px-(--card-spacing) flex flex-wrap items-center gap-2"
+-                                             bis_skin_checked="1"
+                                            >
+                                      <Card>
+                                        <div
+                                          data-slot="card"
+                                          data-size="default"
+                                          className={"group/card flex flex-col gap-(--card-spacing) overflow-hidden r..."}
+-                                         bis_skin_checked="1"
+                                        >
+                                          <CardHeader>
+                                            <div
+                                              data-slot="card-header"
+                                              className="group/card-header @container/card-header grid auto-rows-min i..."
+-                                             bis_skin_checked="1"
+                                            >
+                                              <CardTitle>
+                                                <div
+                                                  data-slot="card-title"
+                                                  className="font-heading font-medium group-data-[size=sm]/card:text-s..."
+-                                                 bis_skin_checked="1"
+                                                >
+                                          <CardContent>
+                                            <div
+                                              data-slot="card-content"
+                                              className="px-(--card-spacing) flex flex-col items-start gap-3"
+-                                             bis_skin_checked="1"
+                                            >
+                              ...
+                            ...
+                  ...
+ 
+[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?53:1195:263)
+    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?10:913:284)
+    at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
+[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?53:1195:263)
+    at Navbar (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?12:928:284)
+    at RootLayout (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?0:131:268) 
+ GET /jogar 200 in 41ms (next.js: 7ms, proxy.ts: 6ms, application-code: 28ms)
+ POST /jogar 200 in 143ms (next.js: 8ms, proxy.ts: 7ms, application-code: 128ms)
+  └─ ƒ sortearSalaAction({}, {}) in 113ms src/lib/squad/actions.ts
+ POST /jogar 200 in 133ms (next.js: 10ms, proxy.ts: 7ms, application-code: 116ms)
+  └─ ƒ sortearSalaAction({}, {}) in 105ms src/lib/squad/actions.ts
+ POST /jogar 200 in 158ms (next.js: 20ms, proxy.ts: 9ms, application-code: 129ms)
+  └─ ƒ sortearSalaAction({}, {}) in 113ms src/lib/squad/actions.ts
+ POST /jogar 200 in 250ms (next.js: 8ms, proxy.ts: 8ms, application-code: 234ms)
+  └─ ƒ trocarSalaSerieAction({}, {}) in 222ms src/lib/squad/actions.ts
+ POST /jogar 200 in 141ms (next.js: 9ms, proxy.ts: 6ms, application-code: 126ms)
+  └─ ƒ sortearSalaAction({}, {}) in 109ms src/lib/squad/actions.ts
+ POST /jogar 200 in 169ms (next.js: 9ms, proxy.ts: 7ms, application-code: 153ms)
+  └─ ƒ sortearSalaAction({}, {}) in 143ms src/lib/squad/actions.ts
+ POST /jogar 200 in 154ms (next.js: 9ms, proxy.ts: 5ms, application-code: 139ms)
+  └─ ƒ sortearSalaAction({}, {}) in 128ms src/lib/squad/actions.ts
+ GET /partida/09fb6d62-ba40-4900-8d02-11697b90280f 200 in 1222ms (next.js: 1067ms, proxy.ts: 5ms, application-code: 149ms)
+ POST /jogar 200 in 2.1s (next.js: 7ms, proxy.ts: 6ms, application-code: 2.1s)
+  └─ ƒ finalizarDraftAction({}, {}) in 819ms src/lib/squad/actions.ts
+ GET /jogar 200 in 40ms (next.js: 9ms, proxy.ts: 5ms, application-code: 27ms)
+ GET /jogar 200 in 42ms (next.js: 10ms, proxy.ts: 5ms, application-code: 28ms)
+ GET /meu-time 200 in 154ms (next.js: 8ms, proxy.ts: 5ms, application-code: 140ms)
+ GET /jogar 200 in 39ms (next.js: 7ms, proxy.ts: 5ms, application-code: 27ms)
+ GET /como-jogar 200 in 67ms (next.js: 26ms, proxy.ts: 4ms, application-code: 36ms)
+ GET /jogar 200 in 37ms (next.js: 7ms, proxy.ts: 5ms, application-code: 25ms)
+ GET /meu-time 200 in 185ms (next.js: 7ms, proxy.ts: 5ms, application-code: 173ms)
+ GET /jogar 200 in 47ms (next.js: 10ms, proxy.ts: 5ms, application-code: 33ms)
+ POST /jogar 200 in 156ms (next.js: 8ms, proxy.ts: 6ms, application-code: 142ms)
+  └─ ƒ sortearSalaAction({}, {}) in 130ms src/lib/squad/actions.ts
+ POST /jogar 200 in 157ms (next.js: 8ms, proxy.ts: 6ms, application-code: 142ms)
+  └─ ƒ sortearSalaAction({}, {}) in 131ms src/lib/squad/actions.ts
+ POST /jogar 200 in 161ms (next.js: 12ms, proxy.ts: 10ms, application-code: 139ms)
+  └─ ƒ sortearSalaAction({}, {}) in 126ms src/lib/squad/actions.ts
+ POST /jogar 200 in 189ms (next.js: 9ms, proxy.ts: 8ms, application-code: 173ms)
+  └─ ƒ sortearSalaAction({}, {}) in 160ms src/lib/squad/actions.ts
+ POST /jogar 200 in 129ms (next.js: 10ms, proxy.ts: 7ms, application-code: 113ms)
+  └─ ƒ sortearSalaAction({}, {}) in 101ms src/lib/squad/actions.ts
+ POST /jogar 200 in 169ms (next.js: 11ms, proxy.ts: 7ms, application-code: 151ms)
+  └─ ƒ sortearSalaAction({}, {}) in 135ms src/lib/squad/actions.ts
+ GET /partida/c31e18a9-55f4-443b-b2cc-3172304924ed 200 in 150ms (next.js: 21ms, proxy.ts: 5ms, application-code: 124ms)
+ POST /jogar 200 in 669ms (next.js: 9ms, proxy.ts: 7ms, application-code: 653ms)
+  └─ ƒ finalizarDraftAction({}, {}) in 487ms src/lib/squad/actions.ts
+ GET /torneio 200 in 179ms (next.js: 29ms, proxy.ts: 5ms, application-code: 145ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 1136ms (next.js: 1017ms, proxy.ts: 6ms, application-code: 113ms)
+ POST /torneio 200 in 1517ms (next.js: 9ms, proxy.ts: 6ms, application-code: 1503ms)
+  └─ ƒ criarTorneioAction({}, {}) in 351ms src/lib/tournament/actions.ts
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 303ms (next.js: 18ms, proxy.ts: 5ms, application-code: 280ms)
+ POST /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 4.5s (next.js: 18ms, proxy.ts: 5ms, application-code: 4.5s)
+  └─ ƒ iniciarTorneioAction({}, {}) in 4129ms src/lib/tournament/actions.ts
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 407ms (next.js: 28ms, proxy.ts: 13ms, application-code: 367ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 440ms (next.js: 18ms, proxy.ts: 7ms, application-code: 415ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 405ms (next.js: 78ms, proxy.ts: 16ms, application-code: 311ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 407ms (next.js: 53ms, proxy.ts: 15ms, application-code: 339ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 384ms (next.js: 100ms, proxy.ts: 43ms, application-code: 242ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 293ms (next.js: 23ms, proxy.ts: 13ms, application-code: 258ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 347ms (next.js: 57ms, proxy.ts: 56ms, application-code: 234ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 894ms (next.js: 130ms, proxy.ts: 16ms, application-code: 747ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 843ms (next.js: 21ms, proxy.ts: 133ms, application-code: 688ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 228ms (next.js: 13ms, proxy.ts: 5ms, application-code: 211ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 389ms (next.js: 45ms, proxy.ts: 6ms, application-code: 337ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 744ms (next.js: 24ms, proxy.ts: 55ms, application-code: 664ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 570ms (next.js: 15ms, proxy.ts: 6ms, application-code: 548ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 377ms (next.js: 28ms, proxy.ts: 9ms, application-code: 340ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 475ms (next.js: 106ms, proxy.ts: 10ms, application-code: 360ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 479ms (next.js: 130ms, proxy.ts: 10ms, application-code: 339ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 472ms (next.js: 68ms, proxy.ts: 11ms, application-code: 393ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 469ms (next.js: 98ms, proxy.ts: 18ms, application-code: 353ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 456ms (next.js: 103ms, proxy.ts: 50ms, application-code: 304ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 315ms (next.js: 26ms, proxy.ts: 67ms, application-code: 222ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 284ms (next.js: 66ms, proxy.ts: 61ms, application-code: 157ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 321ms (next.js: 75ms, proxy.ts: 98ms, application-code: 148ms)
+[browser] Base UI: A component that acts as a button expected a native <button> because the `nativeButton` prop is true. Rendering a non-<button> removes native button semantics, which can impact forms and accessibility. Use a real <button> in the `render` prop, or set `nativeButton` to `false`.
+    at Button (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__1dm_i_f._.js?53:1195:263)
+    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09gjg5b._.js?194:292:333)
+    at Array.map (<anonymous>:1:18)
+    at <anonymous> (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09gjg5b._.js?186:264:113)
+    at Array.map (<anonymous>:1:18)
+    at BracketView (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09gjg5b._.js?187:253:27)
+    at TorneioDetailPage (about://React/Server/C:%5CUsers%5CUser%5CDocuments%5CPROJETOS%20E%20CODIGOS%5CUniDraft%5C.next%5Cdev%5Cserver%5Cchunks%5Cssr%5C%5Broot-of-the-server%5D__09gjg5b._.js?184:154:264) 
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 169ms (next.js: 20ms, proxy.ts: 7ms, application-code: 141ms)
+ POST /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 2.5s (next.js: 18ms, proxy.ts: 7ms, application-code: 2.5s)
+  └─ ƒ jogarPartidaTorneioAction({}) in 2266ms src/lib/tournament/actions.ts
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 153ms (next.js: 10ms, proxy.ts: 5ms, application-code: 138ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 363ms (next.js: 16ms, proxy.ts: 6ms, application-code: 341ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 317ms (next.js: 45ms, proxy.ts: 14ms, application-code: 258ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 316ms (next.js: 110ms, proxy.ts: 16ms, application-code: 189ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 325ms (next.js: 83ms, proxy.ts: 15ms, application-code: 227ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 406ms (next.js: 172ms, proxy.ts: 13ms, application-code: 222ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 396ms (next.js: 205ms, proxy.ts: 16ms, application-code: 174ms)
+ GET /partida/29bf31c9-1213-42ff-ba7d-d4807eefe5fb 200 in 176ms (next.js: 40ms, proxy.ts: 7ms, application-code: 130ms)
+ GET /torneio 200 in 173ms (next.js: 10ms, proxy.ts: 8ms, application-code: 155ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 230ms (next.js: 18ms, proxy.ts: 8ms, application-code: 204ms)
+ GET /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 170ms (next.js: 13ms, proxy.ts: 8ms, application-code: 149ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 180ms (next.js: 17ms, proxy.ts: 6ms, application-code: 157ms)
+ POST /torneio/0dface8a-145b-42f0-b143-5533095430e0 200 in 2.7s (next.js: 17ms, proxy.ts: 6ms, application-code: 2.7s)
+  └─ ƒ jogarPartidaTorneioAction({}) in 2462ms src/lib/tournament/actions.ts
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 211ms (next.js: 17ms, proxy.ts: 9ms, application-code: 184ms)
+ POST /torneio/[id] 200 in 315ms (next.js: 18ms, proxy.ts: 10ms, application-code: 287ms)
+  └─ ƒ jogarPartidaTorneioAction({}) in 199ms src/lib/tournament/actions.ts
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 346ms (next.js: 43ms, proxy.ts: 13ms, application-code: 291ms)
+ POST /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 561ms (next.js: 54ms, proxy.ts: 10ms, application-code: 497ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 395ms (next.js: 69ms, proxy.ts: 12ms, application-code: 314ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 405ms (next.js: 44ms, proxy.ts: 12ms, application-code: 350ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 404ms (next.js: 94ms, proxy.ts: 13ms, application-code: 297ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 495ms (next.js: 210ms, proxy.ts: 10ms, application-code: 276ms)
+ GET /partida/ae1c89c5-76d6-459f-bca0-caf5911ad987 200 in 160ms (next.js: 18ms, proxy.ts: 9ms, application-code: 133ms)
+ GET /torneio 200 in 159ms (next.js: 9ms, proxy.ts: 6ms, application-code: 144ms)
+ GET /jogar 200 in 41ms (next.js: 8ms, proxy.ts: 6ms, application-code: 27ms)
+ GET /meu-time 200 in 164ms (next.js: 8ms, proxy.ts: 5ms, application-code: 150ms)
+ GET /jogar 200 in 46ms (next.js: 8ms, proxy.ts: 6ms, application-code: 33ms)
