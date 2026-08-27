@@ -102,6 +102,12 @@ export function MatchPlaybackController({
 
   return (
     <div className="flex flex-col gap-6">
+      {finalizado && tournamentId && (
+        <Button render={<Link href={`/torneio/${tournamentId}`} />}>
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Voltar ao chaveamento
+        </Button>
+      )}
       <LiveScoreboard
         squadHome={data.squadHome}
         squadAway={data.squadAway}
@@ -128,12 +134,6 @@ export function MatchPlaybackController({
           <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
         </div>
       </div>
-      {finalizado && tournamentId && (
-        <Button variant="outline" render={<Link href={`/torneio/${tournamentId}`} />}>
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Voltar ao chaveamento
-        </Button>
-      )}
     </div>
   );
 }
