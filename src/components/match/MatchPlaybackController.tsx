@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { LiveScoreboard } from "@/components/match/LiveScoreboard";
 import { EventTimeline, type EventoTimeline } from "@/components/match/EventTimeline";
 import { PlaybackSpeedControl, type PlaybackSpeed } from "@/components/match/PlaybackSpeedControl";
 import { MatchRatingsPanel } from "@/components/match/MatchRatingsPanel";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "@/components/icons";
 import { DURACAO_JOGO_MIN } from "@/lib/simulation/simulateMatch";
 import type { PlayerRating } from "@/lib/match/ratings";
 
@@ -34,12 +37,17 @@ export function MatchPlaybackController({
   data,
   ratings,
   mvp,
+  tournamentId,
 }: {
   data: MatchPlaybackData;
   /** Notas + melhor jogador (Item 7) — opcionais: só renderiza o painel quando presentes,
    * revelado apenas quando `finalizado` vira true (mesmo gate do placar/eventos revelados). */
   ratings?: PlayerRating[];
   mvp?: PlayerRating | null;
+  /** Presente quando essa partida pertence a um torneio — mostra o botão de
+   * volta ao chaveamento assim que o playback revela o resultado final, mesmo
+   * pra quem já foi eliminado (é espectador do torneio, não dono de um dos times). */
+  tournamentId?: string | null;
 }) {
   const iniciadaEmMs = new Date(data.iniciadaEmISO).getTime();
   const duracaoMs = data.duracaoPlaybackSeg * 1000;
@@ -120,6 +128,12 @@ export function MatchPlaybackController({
           <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
         </div>
       </div>
+      {finalizado && tournamentId && (
+        <Button variant="outline" render={<Link href={`/torneio/${tournamentId}`} />}>
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Voltar ao chaveamento
+        </Button>
+      )}
     </div>
   );
 }

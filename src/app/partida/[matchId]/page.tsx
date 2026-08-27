@@ -16,16 +16,25 @@ function ehDono(
   return identity.kind === "user" ? squad.userId === identity.id : squad.guestId === identity.id;
 }
 
-/** Dono de um dos dois times, ou participante do torneio a que essa partida pertence (espectador). */
-async function podeAssistir(match: MatchFull, identity: PlayerIdentity): Promise<boolean> {
-  if (ehDono(match.squadHome, identity) || ehDono(match.squadAway, identity)) return true;
-
+/**
+ * Dono de um dos dois times, ou participante do torneio a que essa partida pertence (espectador) —
+ * inclusive já eliminado, pra poder voltar e acompanhar as demais partidas do chaveamento.
+ * Devolve o tournamentId (se houver) pra renderizar o botão "Voltar ao chaveamento".
+ */
+async function podeAssistir(
+  match: MatchFull,
+  identity: PlayerIdentity
+): Promise<{ pode: boolean; tournamentId: string | null }> {
   const [chave] = await db
     .select({ tournamentId: tournamentMatches.tournamentId })
     .from(tournamentMatches)
     .where(eq(tournamentMatches.matchId, match.id))
     .limit(1);
-  if (!chave) return false;
+
+  if (ehDono(match.squadHome, identity) || ehDono(match.squadAway, identity)) {
+    return { pode: true, tournamentId: chave?.tournamentId ?? null };
+  }
+  if (!chave) return { pode: false, tournamentId: null };
 
   const [minhaEntry] = await db
     .select({ id: tournamentEntries.id })
@@ -39,7 +48,7 @@ async function podeAssistir(match: MatchFull, identity: PlayerIdentity): Promise
       )
     )
     .limit(1);
-  return !!minhaEntry;
+  return { pode: !!minhaEntry, tournamentId: minhaEntry ? chave.tournamentId : null };
 }
 
 /**
@@ -60,7 +69,8 @@ export default async function PartidaPage({
 
   const match = await getMatchFull(matchId);
   if (!match || !match.iniciadaEm) notFound();
-  if (!(await podeAssistir(match, identity))) notFound();
+  const { pode, tournamentId } = await podeAssistir(match, identity);
+  if (!pode) notFound();
 
   // Server-side, determinístico e barato (mesma fonte de dados que já dá o placar via
   // filtro de eventos) — calculado sempre que os dados persistidos existem, ainda que o
@@ -103,7 +113,7 @@ export default async function PartidaPage({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
-      <MatchPlaybackController data={data} ratings={ratings} mvp={mvp} />
+      <MatchPlaybackController data={data} ratings={ratings} mvp={mvp} tournamentId={tournamentId} />
     </div>
   );
 }
