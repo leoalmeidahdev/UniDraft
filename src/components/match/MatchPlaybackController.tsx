@@ -106,12 +106,6 @@ export function MatchPlaybackController({
         emPenaltis={emPenaltis}
       />
       {!finalizado && <PlaybackSpeedControl speed={speed} onSpeedChange={handleSpeedChange} />}
-      <div className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Linha do tempo</h2>
-        <div className="overflow-x-auto">
-          <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
-        </div>
-      </div>
       {finalizado && ratings && ratings.length > 0 && (
         <MatchRatingsPanel
           ratings={ratings}
@@ -120,6 +114,12 @@ export function MatchPlaybackController({
           squadAwayId={data.squadAway.id}
         />
       )}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-muted-foreground">Linha do tempo</h2>
+        <div className="overflow-x-auto">
+          <EventTimeline eventos={eventosRevelados} squadHomeId={data.squadHome.id} />
+        </div>
+      </div>
     </div>
   );
 }
