@@ -5,6 +5,8 @@ import { LobbyView } from "@/components/tournament/LobbyView";
 import { BracketView, type ChaveVM } from "@/components/tournament/BracketView";
 import { TournamentRealtimeListener } from "@/components/tournament/TournamentRealtimeListener";
 import { CancelarTorneioForm } from "@/components/tournament/CancelarTorneioForm";
+import { Trophy } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 
 function souDono(
   entry: { ownerUserId: string | null; ownerGuestId: string | null },
@@ -73,6 +75,11 @@ export default async function TorneioDetailPage({
       : null,
   }));
 
+  const campeao =
+    tournament.status === "finalizado"
+      ? tournament.entries.find((e) => e.id === tournament.vencedorEntryId)
+      : null;
+
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-12">
       <TournamentRealtimeListener tournamentId={tournament.id} />
@@ -85,6 +92,16 @@ export default async function TorneioDetailPage({
           <CancelarTorneioForm tournamentId={tournament.id} />
         )}
       </div>
+      {campeao && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-destaque/50 bg-destaque/10 px-4 py-3">
+          <Trophy className="size-6 shrink-0 text-destaque" aria-hidden="true" />
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-medium text-muted-foreground">Campeão do torneio</div>
+            <div className="truncate font-semibold">{campeao.nomeExibicao ?? campeao.squad.nome}</div>
+          </div>
+          {souDono(campeao, identity) && <Badge variant="secondary">Você</Badge>}
+        </div>
+      )}
       <BracketView chaves={chaves} />
     </div>
   );
